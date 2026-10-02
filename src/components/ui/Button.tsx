@@ -1,4 +1,4 @@
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, FocusEvent, ReactNode } from "react";
 import { Link } from "react-router";
 import clsx from "clsx";
 
@@ -8,9 +8,15 @@ type Size = "sm" | "md" | "lg";
 const base =
   "inline-flex items-center justify-center gap-2 rounded-lg font-semibold whitespace-nowrap no-underline transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-[1.1em] [&_svg]:shrink-0";
 
+/**
+ * El borde con ring-* es un box-shadow y pisa la franja oscura del foco global
+ * (:focus-visible en index.css); FOCO_CON_RING la repone sobre el ring.
+ */
+const FOCO_CON_RING = "focus-visible:shadow-[0_0_0_5px_var(--focus-ink)]";
+
 const variants: Record<Variant, string> = {
   primary: "bg-brand text-brand-ink hover:bg-brand-hover",
-  secondary: "bg-surface text-ink ring-1 ring-line-strong ring-inset hover:bg-surface-2",
+  secondary: clsx("bg-surface text-ink ring-1 ring-line-strong ring-inset hover:bg-surface-2", FOCO_CON_RING),
   subtle: "bg-surface-2 text-ink hover:bg-surface-3",
   /** Sobre la banda azul. */
   inverse: "bg-white text-[#0e3a86] hover:bg-[#eaf1fd]",
@@ -18,7 +24,8 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "h-9 px-3.5 text-sm",
+  /** 36px con mouse; 44px en pantallas táctiles. */
+  sm: "h-9 px-3.5 text-sm coarse:h-11",
   md: "h-11 px-5 text-[0.95rem]",
   lg: "h-12 px-6 text-base",
 };
@@ -32,6 +39,37 @@ interface CommonProps {
 
 export function buttonClass({ variant = "primary", size = "md", className }: Omit<CommonProps, "children">) {
   return clsx(base, variants[variant], sizes[size], className);
+}
+
+/**
+ * Fila de chips de filtro. En pantallas chicas es una sola fila con
+ * desplazamiento horizontal que llega a los bordes de la pantalla (así los
+ * filtros no empujan los resultados fuera de la vista), con un fundido a la
+ * derecha que avisa que hay más. Desde md vuelve a ser una fila que se parte.
+ * El py/-my deja lugar al anillo de foco, que el overflow recortaría.
+ * `relative`: los textos sr-only (absolutos) de los chips quedan contenidos en
+ * la fila; si no, escapan del recorte y ensanchan la página.
+ */
+export const chipRowClass =
+  "relative flex gap-2 md:flex-wrap max-md:-mx-4 max-md:-my-1.5 max-md:flex-nowrap max-md:overflow-x-auto max-md:px-4 max-md:py-1.5 max-md:pr-6 max-md:scroll-px-8 max-md:[scrollbar-width:none] max-md:[mask-image:linear-gradient(to_left,transparent,#000_1.5rem)] max-md:[&::-webkit-scrollbar]:hidden sm:max-md:-mx-6 sm:max-md:px-6 sm:max-md:pr-8";
+
+/**
+ * onFocus de los chips dentro de chipRowClass. Chromium sólo desplaza la fila
+ * si el chip enfocado estaba oculto del todo; con teclado lo dejamos entero a
+ * la vista (fuera del fundido). Con toque no: movería el chip bajo el dedo.
+ */
+export function revelarChip(e: FocusEvent<HTMLElement>) {
+  if (e.currentTarget.matches(":focus-visible")) e.currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+/** Chip de filtro (botón con aria-pressed): 36px con mouse, 44px táctil. */
+export function chipClass(active: boolean, className?: string) {
+  return clsx(
+    "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm font-medium whitespace-nowrap transition-colors coarse:h-11",
+    FOCO_CON_RING,
+    active ? "bg-ink text-bg" : "bg-surface text-ink-2 ring-1 ring-line-strong ring-inset hover:bg-surface-2 hover:text-ink",
+    className,
+  );
 }
 
 export function Button({
