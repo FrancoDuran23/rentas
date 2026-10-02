@@ -1,0 +1,299 @@
+@import "@fontsource-variable/public-sans";
+@import "@fontsource-variable/public-sans/wght-italic.css";
+@import "tailwindcss";
+
+/*
+ * Tokens del portal. Dirección: el estándar de un portal de servicios
+ * públicos, sin mundo propio. Blanco, tinta casi negra, un azul
+ * institucional y colores de estado. Los componentes usan sólo los
+ * tokens semánticos; el modo oscuro los redefine.
+ */
+:root {
+  color-scheme: light;
+
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f4f6f9;
+  --surface-3: #e9edf3;
+  --ink: #0b0f19;
+  --ink-2: #333a47;
+  --ink-3: #565e6c;
+  --line: #e1e6ee;
+  --line-strong: #c4ccd8;
+
+  /* Marca: azul del isologo de Rentas (#0068A3, AA sobre blanco: 6:1).
+     --celeste es el tono claro del logo, sólo para detalles sin texto. */
+  --brand: #0068a3;
+  --brand-hover: #00588c;
+  --brand-ink: #ffffff;
+  --brand-soft: #e6f1f8;
+  --celeste: #2581c6;
+  /* Bloques destacados claros */
+  --band: #f1f8fd;
+  --band-ink: #0b0f19;
+  --band-ink-2: #333a47;
+
+  --ok: #12733a;
+  --ok-soft: #e7f4ec;
+  --warn: #8a5300;
+  --warn-soft: #fff3dd;
+  --danger: #b42318;
+  --danger-soft: #fdeceb;
+
+  --focus: #ffd21f;
+  --focus-ink: #0b0f19;
+  --visited: #5b3aa8;
+
+  --shadow-color: 15 23 42;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --surface: #121821;
+  --surface-2: #171f2b;
+  --surface-3: #1f2937;
+  --ink: #eef2f7;
+  --ink-2: #c5ccd7;
+  --ink-3: #9ba4b3;
+  --line: #253041;
+  --line-strong: #364459;
+  --brand: #5cb3ea;
+  --brand-hover: #8dcaf1;
+  --brand-ink: #031a2b;
+  --brand-soft: #0d2a3f;
+  --celeste: #2581c6;
+  --band: #111c27;
+  --band-ink: #eef2f7;
+  --band-ink-2: #c5ccd7;
+  --ok: #6fd39a;
+  --ok-soft: #12291c;
+  --warn: #f2bb5c;
+  --warn-soft: #2d2210;
+  --danger: #ff8e83;
+  --danger-soft: #2f1513;
+  --visited: #b9a3f0;
+  --shadow-color: 0 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d1117;
+    --surface: #121821;
+    --surface-2: #171f2b;
+    --surface-3: #1f2937;
+    --ink: #eef2f7;
+    --ink-2: #c5ccd7;
+    --ink-3: #9ba4b3;
+    --line: #253041;
+    --line-strong: #364459;
+    --brand: #5cb3ea;
+    --brand-hover: #8dcaf1;
+    --brand-ink: #031a2b;
+    --brand-soft: #0d2a3f;
+    --celeste: #2581c6;
+    --band: #111c27;
+    --band-ink: #eef2f7;
+    --band-ink-2: #c5ccd7;
+    --ok: #6fd39a;
+    --ok-soft: #12291c;
+    --warn: #f2bb5c;
+    --warn-soft: #2d2210;
+    --danger: #ff8e83;
+    --danger-soft: #2f1513;
+    --visited: #b9a3f0;
+    --shadow-color: 0 0 0;
+  }
+}
+
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) {
+      @slot;
+    }
+  }
+}
+
+@theme {
+  --font-sans: "Public Sans Variable", "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-celeste: var(--celeste);
+  --color-band: var(--band);
+  --color-band-ink: var(--band-ink);
+  --color-band-ink-2: var(--band-ink-2);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
+  --color-focus-ink: var(--focus-ink);
+
+  /* Sólo menús y diálogos tienen elevación. */
+  --shadow-pop: 0 12px 32px -8px rgb(var(--shadow-color) / 0.22), 0 2px 6px rgb(var(--shadow-color) / 0.08);
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Superficies del navegador, del mismo sistema */
+  ::selection {
+    background: color-mix(in oklab, var(--brand) 22%, transparent);
+    color: var(--ink);
+  }
+  input,
+  textarea {
+    caret-color: var(--brand);
+  }
+  html {
+    scrollbar-color: var(--line-strong) transparent;
+  }
+
+  /* Enlaces de texto: subrayados, con visitado distinguible */
+  a {
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+  }
+
+  /* Foco de alta visibilidad (patrón GOV.UK): amarillo + borde oscuro */
+  :focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 0;
+    box-shadow: 0 0 0 5px var(--focus-ink);
+    border-radius: 4px;
+  }
+  a:focus-visible {
+    background-color: var(--focus);
+    color: var(--focus-ink) !important;
+    text-decoration: none;
+    outline: none;
+    box-shadow: 0 -2px var(--focus), 0 4px var(--focus-ink);
+    border-radius: 0;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .container-page {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  /* Enlace de texto estándar */
+  .link {
+    color: var(--brand);
+    text-decoration-line: underline;
+    text-decoration-color: color-mix(in oklab, var(--brand) 45%, transparent);
+    transition: text-decoration-color 150ms, color 150ms;
+  }
+  .link:hover {
+    color: var(--brand-hover);
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
+  }
+
+  /* Texto de lectura (Ayuda, detalle de impuesto, normativa) */
+  .prose-measure {
+    max-width: 68ch;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--focus);
+    color: var(--focus-ink);
+    font-weight: 700;
+    text-decoration: underline;
+  }
+  .skip-link:focus {
+    top: 0.5rem;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .animate-pop {
+    animation: pop-in 160ms var(--ease-out-quint) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pop {
+      animation: none;
+    }
+  }
+}
