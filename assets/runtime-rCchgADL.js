@@ -15,10 +15,15 @@ struct VgpuFullscreenVertexOut {
   return out;
 }
 ${e}`}function wc(e){return gi(e,`effect.wgsl`).entryPoints.some(e=>e.stage===`vertex`)}function Tc(e,t){return kc(on(e,`frame`)).frame(t)}function Ec(e,t,n={}){return kc(on(e,`frameLoop`)).loop(t,n)}var Dc,Oc=qt(`frame-runner`);function kc(e){return e.service(Oc,e=>{let t=Mo(e);return new Bc(()=>{let t=()=>{},n=new Ac(e.device,void 0,t=>e.reportError(t),t=>{e.trackDelivery(t)},()=>t());return t=e.own(`scheduler`,()=>n.cancel()),n},()=>t.tick(),t=>e.own(`scheduler`,()=>t.stop()))})}var Ac=class{device;defaultTarget;errorSink;trackSettled;releaseLifecycle;done=Promise.resolve();#e;#t=[];#n=new Set;#r=new Set;#i=!1;#a=!1;#o=!1;static{Dc=e=>!(#i in e)||!e.#i&&!e.#a}constructor(e,t,n,r,i){this.device=e,this.defaultTarget=t,this.errorSink=n,this.trackSettled=r,this.releaseLifecycle=i,D(e,`Frame.constructor`),this.#e=e.gpu.createCommandEncoder({label:`vgpu.frame`})}pass(e,t){if(this.#a)throw Rt(`Frame.pass`);D(this.device,`Frame.pass`);let n=ro(e),r=typeof t==`function`?t:e=>e.draw(t),i=n?e:e.target??this.defaultTarget;if(!i)throw Ct(`Frame.pass`);if(Wo(i)&&this.#i)throw At(`Frame.pass`);let a=n?void 0:e.clear,o=a===!1;if(o&&i.sampleCount===4)throw ft();let s=n?void 0:e.clearDepth;if(s!==void 0){if(typeof s!=`number`||!(s>=0&&s<=1))throw pt(s);if(o)throw ht();if(!i.depth)throw pt(s,`but the target has no depth attachment, so clearDepth would have no effect.`,`Create the target with depth: true (or a depth format), or drop clearDepth.`)}let c=n?void 0:e.clearStencil;if(c!==void 0){if(typeof c!=`number`||!Number.isInteger(c)||c<0||c>4294967295)throw gt(`received ${String(c)}; expected an integer in [0, 0xFFFFFFFF] (WebGPU GPUStencilValue).`);if(o)throw _t();let e=i.depth?.format;if(!eo(e))throw gt(`received ${String(c)}, but the target's depth format ${e?`"${e}"`:`(none)`} has no stencil aspect, so clearStencil would have no effect.`)}let l=n?void 0:e.depthReadOnly;if(l!==void 0&&typeof l!=`boolean`)throw w(`received ${$(l)}; expected a boolean.`,`Pass depthReadOnly: true to open the pass with a read-only depth attachment, or omit it.`);if(l){if(!i.depth)throw w(`is set, but the target has no depth attachment, so there is nothing to make read-only.`,`Create the target with depth: true (or a depth format), or drop depthReadOnly.`);if(i.sampleCount===4)throw vt();if(s!==void 0)throw w(`cannot be combined with clearDepth; a read-only depth aspect omits its load/store ops and is never cleared.`,`Remove clearDepth, or drop depthReadOnly.`);if(c!==void 0)throw w(`cannot be combined with clearStencil; a read-only stencil aspect omits its load/store ops and is never cleared.`,`Remove clearStencil, or drop depthReadOnly.`)}let u=n?void 0:Lc(e.viewport,this.device.gpu.limits,i.size),d=n?void 0:Rc(e.scissor,i.size),f=[],p;try{let t=n||e.timer===void 0?void 0:this.#d(e.timer,i,f,Fc),m=(n||e.visibility===void 0?void 0:this.#d(e.visibility,i,f,Ic))?.occlusion,h=i.renderPassDescriptor({clear:a===void 0||a===!0||a===!1?i.clearColor??Za:a,preserve:o,clearDepth:s,clearStencil:c,depthReadOnly:l});t?.timestampWrites&&(h={...h,timestampWrites:t.timestampWrites}),m&&(h={...h,occlusionQuerySet:m.querySet}),p=this.#e.beginRenderPass(h),u&&p.setViewport(u.x,u.y,u.width,u.height,u.minDepth,u.maxDepth),d&&p.setScissorRect(d[0],d[1],d[2],d[3]),this.#o=!0;try{r(new jc(p,i,this.#t,l===!0,m,this,e=>{if(D(this.device,e),this.#a)throw Rt(e)}))}finally{this.#o=!1}}catch(e){this.#l(f),U(this.#t),this.#t.length=0,wi(this.device);try{p?.end()}catch{}throw e}Mi(this.device,p,this.#t)}submit(){if(this.#i||this.#a)return;D(this.device,`Frame.submit`),this.#i=!0,this.releaseLifecycle?.();for(let e of this.#u())e.finalizeFrame(this,this.#e);let e,t=this.#t[0]?.context;t&&xi(this.device,t);try{e=this.#e.finish()}catch(e){this.#s(this.#c());let n=t?H(this.device):void 0;U(this.#t),n&&U([n]);let r=n?.context??t;if(!r)throw e;this.done=this.#p(this.#f(r.label,r.group,e));return}if(t){let e=H(this.device);e&&(this.#t[0]=this.#t[0]?Di(e,this.#t[0]):e)}let n=this.#t[0]?.context;n&&xi(this.device,n);try{this.device.gpu.queue.submit([e])}catch(e){this.#s(this.#c());let t=n?H(this.device):void 0;U(this.#t),t&&U([t]);let r=t?.context??n;if(!r)throw e;this.done=this.#p(this.#f(r.label,r.group,e));return}if(n){let e=H(this.device);e&&(this.#t[0]=this.#t[0]?Di(e,this.#t[0]):e)}for(let e of this.#u())e.frameSubmitted(this);this.#s(this.#r),this.done=this.#p(Ei(this.device,this.#t,{errorSink:this.errorSink}))}cancel(){if(!this.#a){if(this.#i)throw Bt(`Frame.cancel`);if(this.#o)throw zt(`Frame.cancel`);this.#a=!0,this.releaseLifecycle?.(),this.#s(this.#c()),this.#n.clear(),this.#r.clear(),U(this.#t),this.#t.length=0}}#s(e){for(let t of[...e])t.frameAbandoned(this)}#c(){return[...this.#n,...this.#r]}#l(e){for(let t of[...e])this.#n.delete(t),this.#r.add(t)}#u(){return[...this.#n].filter(e=>!this.#r.has(e))}#d(e,t,n,r){let i=us(e);if(!i)throw r(e);let a;try{a=i[ls]({frame:this,device:this.device,target:t})}catch(e){throw this.#l(this.#n),e}return this.#n.add(a.owner),n.push(a.owner),a}async#f(e,t,n){await Ti(this.device),D(this.device,`Frame.validation`);let r=tt(e,t,n);this.errorSink?await this.errorSink(r):console.error(r)}#p(e){return this.trackSettled?.(e),e}},jc=class{encoder;target;validations;depthReadOnly;occlusionSource;frame;assertFrameOpen;#e=!1;constructor(e,t,n,r=!1,i,a,o){this.encoder=e,this.target=t,this.validations=n,this.depthReadOnly=r,this.occlusionSource=i,this.frame=a,this.assertFrameOpen=o}draw(e,t={}){this.assertFrameOpen?.(`FramePass.draw`);let n=Nc(e);this.depthReadOnly&&Mc(n,this.target),n.encode(this.encoder,this.target,t,e=>this.validations.push(e))}occlusion(e,t){if(this.assertFrameOpen?.(`FramePass.occlusion`),!this.occlusionSource)throw xt();if(this.#e)throw St();let n=this.occlusionSource.beginQuery(e,this.frame);this.encoder.beginOcclusionQuery(n),this.#e=!0;try{typeof t==`function`?t():this.draw(t)}finally{this.#e=!1,this.encoder.endOcclusionQuery()}}bundles(...e){if(this.assertFrameOpen?.(`FramePass.bundles`),this.depthReadOnly)throw w(`pass cannot replay bundles: bundle records bundles with writable depth/stencil, and WebGPU only executes read-only-recorded bundles in a read-only pass.`,`Encode the draws directly with pass.draw(...) inside the depthReadOnly pass.`,`FramePass.bundles`);let t=e.map(e=>cs(e)??Pc());for(let e of t)e.assertReplayable(this.target);this.encoder.executeBundles(t.map(e=>e.gpu))}};function Mc(e,t){if(e.writesDepth())throw w(`pass cannot encode draw '${e.label}': its depth state writes depth (the default is write: true). Give the draw depth: { write: false } (or depth: false to disable depth testing).`,`Use depth: { write: false } on the draw, or open the pass without depthReadOnly.`,`FramePass.draw`);if(eo(t.depth?.format)){let t=e.stencilWritingOps();if(t.length)throw w(`pass cannot encode draw '${e.label}': its stencil ops can write (${t.join(`, `)}), and the pass's stencil aspect is read-only too.`,`Use "keep" for those ops or stencil writeMask: 0, or open the pass without depthReadOnly.`,`FramePass.draw`)}}function Nc(e){let t=os(e);if(!t)throw TypeError(`Invalid Effect instance: pass.draw() expects a Draw or an Effect created by this library.`);return t}function Pc(){throw new y({code:`VGPU-R3-BUNDLE-INVALID`,message:`p.bundles() expected bundles created by bundle(gpu, { target }, cb).`,where:`FramePass.bundles`})}function Fc(e){return yt(`FramePassOptions.timer received ${$(e)}; expected a TimerSpan from timer.span(name).`,`Create const passTimer = timer(gpu) once, then pass passTimer.span("name") per pass.`,`Frame.pass`)}function Ic(e){return bt(`FramePassOptions.visibility received ${$(e)}; expected a Visibility from visibility(gpu).`,`Create const vis = visibility(gpu) once, then pass { target, visibility: vis } per pass.`,`Frame.pass`)}function Lc(e,t,n){if(e===void 0)return;if(typeof e!=`object`||!e||Array.isArray(e))throw C(`received ${$(e)}; expected { x?, y?, width, height, minDepth?, maxDepth? }.`);let{x:r=0,y:i=0,width:a,height:o,minDepth:s=0,maxDepth:c=1}=e;for(let[e,t]of[[`x`,r],[`y`,i],[`width`,a],[`height`,o],[`minDepth`,s],[`maxDepth`,c]])if(typeof t!=`number`||!Number.isFinite(t))throw C(`${e} received ${$(t)}; expected a finite number.`);let l=t.maxTextureDimension2D,u=l*2,d=`target is ${n[0]}x${n[1]}px, device maxTextureDimension2D is ${l}`;if(!(a>=0&&a<=l))throw C(`width ${a} is outside [0, ${l}] (${d}).`);if(!(o>=0&&o<=l))throw C(`height ${o} is outside [0, ${l}] (${d}).`);if(!(r>=-u&&r+a<=u-1))throw C(`x ${r} with width ${a} is outside [${-u}, ${u-1}] (${d}).`);if(!(i>=-u&&i+o<=u-1))throw C(`y ${i} with height ${o} is outside [${-u}, ${u-1}] (${d}).`);if(!(s>=0&&s<=1))throw C(`minDepth ${s} is outside [0, 1].`);if(!(c>=0&&c<=1))throw C(`maxDepth ${c} is outside [0, 1].`);if(!(s<=c))throw C(`minDepth ${s} exceeds maxDepth ${c}.`);return{x:r,y:i,width:a,height:o,minDepth:s,maxDepth:c}}function Rc(e,t){if(e===void 0)return;if(!Array.isArray(e)||e.length!==4)throw mt(`received ${$(e)}; expected [x, y, width, height].`);let[n,r,i,a]=e;for(let[e,t]of[[`x`,n],[`y`,r],[`width`,i],[`height`,a]])if(typeof t!=`number`||!Number.isInteger(t)||t<0)throw mt(`${e} received ${$(t)}; expected a non-negative integer.`);let[o,s]=t;if(n+i>o||r+a>s)throw mt(`[${n}, ${r}, ${i}, ${a}] exceeds the target's current size ${o}x${s}px (x + width <= ${o}, y + height <= ${s}).`);return[n,r,i,a]}function $(e){return typeof e==`string`?`'${e}'`:Array.isArray(e)?`[${e.map(e=>$(e)).join(`, `)}]`:typeof e==`object`&&e?`an object`:String(e)}function zc(e){let t=e?.code;return t===`VGPU-DEVICE-DISPOSED`||t===`VGPU-DEVICE-LOST`}var Bc=class{createFrame;advance;trackLoop;#e=!1;constructor(e,t,n){this.createFrame=e,this.advance=t,this.trackLoop=n}frame(e){if(this.#e||Bo())throw Lt();this.#e=!0,Ho();try{this.advance();let t=this.createFrame();if(e){try{e(t)}catch(e){if(Dc(t))try{t.cancel()}catch{}throw e}try{t.submit()}catch(e){if(!zc(e))throw e}}return t}finally{Uo(),this.#e=!1}}loop(e,t={}){let n=!1,r=globalThis.requestAnimationFrame??(e=>setTimeout(()=>e(performance.now()),16)),i=globalThis.cancelAnimationFrame??(e=>clearTimeout(e)),a=t.fps&&t.fps>0?1e3/t.fps:0,o,s=0,c,l=()=>{n=!0,i(s),c?.(),c=void 0},u=t=>{if(!n){if(Hc(t,o,a)){o=t;try{this.frame(e)}catch(e){throw l(),e}}n||(s=r(u))}};s=r(u);let d={stop:l};return c=this.trackLoop?.(d),d}},Vc=1;function Hc(e,t,n){return t===void 0||n<=0||e-t>=n-Vc}function Uc(e){return Qt(`browser`,e)}var Wc={luz:{source:{version:1,wgsl:`// vgsl-module: /home/user/celo-agent-lab/src/shaders/luz.wgsl
-// luz.wgsl — Detalle de luz ambiental para la portada.
-// Un degradé casi plano con un velo de color que deriva muy lento (fbm de
-// muy baja frecuencia). Los colores llegan como uniforms (sRGB) para que
-// el mismo efecto sirva en modo claro (blanco con velo celeste) y oscuro.
+// luz.wgsl — Luz ambiental en movimiento para la portada.
+//
+// Tres masas de luz suaves derivan por trayectorias lentas (Lissajous de
+// 29 a 47 s por eje). Se mueven despacio pero con dirección, así el ojo
+// lo lee como luz que se desplaza y no como humo que se reforma. Los colores
+// llegan como uniforms (sRGB) para servir en modo claro y oscuro.
+//
+// Todo es periódico en PERIOD segundos (los períodos dividen a PERIOD), así
+// el reloj del host puede envolverse en ese valor sin ningún salto.
      
      
       
@@ -36,25 +41,61 @@ struct _vgsl_0629ac64__Params {
 
 @group(0) @binding(0) var<uniform> params: _vgsl_0629ac64__Params;
 
+const _vgsl_0629ac64__TAU: f32 = 6.28318530718;
+const _vgsl_0629ac64__PERIOD: f32 = 1200.0;
+
+/* Masa de luz suave: 1 en el centro, ~0.2 en el radio, nada más allá. */
+fn _vgsl_0629ac64__mass(p: vec2f, c: vec2f, r: f32) -> f32 {
+  let d = length(p - c) / r;
+  return exp(-1.6 * d * d);
+}
+
+/* Deriva lenta: óvalo de Lissajous. nx, ny son enteros → el ciclo cierra en PERIOD. */
+fn _vgsl_0629ac64__drift(t: f32, amp: vec2f, nx: f32, ny: f32, phase: vec2f) -> vec2f {
+  return amp * vec2f(sin(_vgsl_0629ac64__TAU * (t * nx / _vgsl_0629ac64__PERIOD) + phase.x), sin(_vgsl_0629ac64__TAU * (t * ny / _vgsl_0629ac64__PERIOD) + phase.y));
+}
+
 @fragment fn fs_main(@location(0) uv: vec2f) -> @location(0) vec4f {
-  let aspect = params.resolution.x / max(params.resolution.y, 1.0);
-  let p = vec2f(uv.x * aspect, uv.y);
-  let t = params.time * 0.03;
+  let res = params.resolution;
+  let aspect = res.x / max(res.y, 1.0);
+  // Unidades físicas: el lado corto mide 1, así el tamaño de las masas
+  // no depende de la altura de la banda ni del aspecto.
+  let s = min(res.x, res.y);
+  let scale = res / s;
+  let p = uv * scale;
+  let t = params.time;
+  // El puntero (sólo escritorio) corre las masas unos píxeles, nada más.
+  let nudge = (params.pointer - 0.5) * 0.02;
 
-  // Base: degradé vertical casi imperceptible.
+  // Composición apaisada: las masas viven a la derecha, lejos del texto.
+  // Períodos (s): 34/41, 43/29, 38/47 → n = PERIOD / T.
+  let a1 = vec2f(0.80, 0.30) * scale + _vgsl_0629ac64__drift(t, vec2f(0.085 * scale.x, 0.2 * scale.y), 35.0, 29.0, vec2f(0.0, 1.7)) + nudge;
+  let a2 = vec2f(0.96, 0.85) * scale + _vgsl_0629ac64__drift(t, vec2f(0.085 * scale.x, 0.2 * scale.y), 28.0, 41.0, vec2f(2.1, 0.6)) + nudge;
+  let a3 = vec2f(0.64, 1.05) * scale + _vgsl_0629ac64__drift(t, vec2f(0.085 * scale.x, 0.2 * scale.y), 32.0, 26.0, vec2f(4.0, 2.9)) + nudge;
+  let wide = 0.55 * _vgsl_0629ac64__mass(p, a1, 0.65) + 0.45 * _vgsl_0629ac64__mass(p, a2, 0.60) + 0.30 * _vgsl_0629ac64__mass(p, a3, 0.70);
+
+  // Composición vertical (móvil): una masa grande arriba a la derecha, casi
+  // fuera del lienzo, y otra más tenue abajo a la izquierda detrás de los
+  // accesos directos. El texto ocupa todo el ancho, por eso la luz es más baja.
+  let b1 = vec2f(1.0, 0.03) * scale + _vgsl_0629ac64__drift(t, vec2f(0.14, 0.09 * scale.y), 35.0, 29.0, vec2f(0.0, 1.7));
+  let b2 = vec2f(0.10, 0.92) * scale + _vgsl_0629ac64__drift(t, vec2f(0.14, 0.09 * scale.y), 28.0, 41.0, vec2f(2.1, 0.6));
+  let tall = min(0.65, 0.75 * _vgsl_0629ac64__mass(p, b1, 0.90) + 0.50 * _vgsl_0629ac64__mass(p, b2, 0.75));
+
+  // Un toque de ruido de una sola octava para que las masas no sean círculos
+  // perfectos; su deriva también es circular, y por eso periódica.
+  let ring = vec2f(cos(_vgsl_0629ac64__TAU * t / _vgsl_0629ac64__PERIOD), sin(_vgsl_0629ac64__TAU * t / _vgsl_0629ac64__PERIOD)) * 1.9;
+  let w = 0.12 * _vgsl_d24de941__simplex2d(p * 0.9 + ring);
+
+  let k = smoothstep(0.7, 0.95, aspect);
+  let veil = clamp(mix(tall, wide, k) + w * mix(0.6, 1.0, k), 0.0, 1.0);
+
+  // Base: degradé vertical casi imperceptible; encima, el velo.
   var col = mix(_vgsl_b183bc8f__srgbToLinear3(params.top), _vgsl_b183bc8f__srgbToLinear3(params.bottom), smoothstep(0.0, 1.0, uv.y));
-
-  // Velo que deriva: concentrado a la derecha, lejos del texto.
-  let q = vec2f(
-    _vgsl_d24de941__fbmSimplex2d(p * 0.35 + vec2f(t, -t * 0.6), 2, 2.0, 0.5),
-    _vgsl_d24de941__fbmSimplex2d(p * 0.35 + vec2f(-t * 0.7, t * 0.4) + vec2f(4.2, 1.3), 2, 2.0, 0.5),
-  );
-  let n = _vgsl_d24de941__fbmSimplex2d(p * 0.6 + q * 0.4 + vec2f(t * 0.5, 0.0), 3, 2.0, 0.45);
-  let veil = smoothstep(-0.3, 0.9, n) * smoothstep(0.15, 0.95, uv.x + (params.pointer.x - 0.5) * 0.05);
   col = mix(col, _vgsl_b183bc8f__srgbToLinear3(params.glow), veil * params.amount);
 
   var srgb = _vgsl_b183bc8f__linearToSrgb3(col);
-  let h = _vgsl_f8538ee3__hash2(uv * params.resolution + vec2f(fract(params.time) * 37.0)).x - 0.5;
+  // Grano fijo en el píxel (no se resiembra por cuadro): quita el bandeado sin titilar.
+  let h = _vgsl_f8538ee3__hash2(floor(uv * res)).x - 0.5;
   srgb += vec3f(h * params.grain);
   return vec4f(srgb, 1.0);
 }
@@ -135,21 +176,7 @@ fn _vgsl_d24de941__simplexKernel2(cell: vec2i, d: vec2f) -> f32 {
 // GPU-hang risk, and \`gain\` to [0, 1] because a negative gain would break weight = sum of |a| and
 // with it the range proof. Both clamps are silent and documented. Free invariant:
 // \`fbmSimplex2d(p, 1, lacunarity, gain)\` is exactly \`simplex2d(p)\`.
- fn _vgsl_d24de941__fbmSimplex2d(position: vec2f, octaves: i32, lacunarity: f32, gain: f32) -> f32 {
-  let count = clamp(octaves, 1, 16);
-  let decay = clamp(gain, 0.0, 1.0);
-  var sum = 0.0;
-  var amplitude = 1.0;
-  var weight = 0.0;
-  var sample = position;
-  for (var i = 0; i < count; i = i + 1) {
-    sum = sum + amplitude * _vgsl_d24de941__simplex2d(sample);
-    weight = weight + amplitude;
-    sample = sample * lacunarity;
-    amplitude = amplitude * decay;
-  }
-  return sum / weight;
-}
+ 
 
  
 
@@ -272,4 +299,4 @@ fn _vgsl_d24de941__simplexKernel2(cell: vec2i, d: vec2f) -> f32 {
  
 
  
-`,functionExports:[{name:`simplex2d`,resolvedName:`_vgsl_d24de941__simplex2d`,parameterNames:[`position`]},{name:`fbmSimplex2d`,resolvedName:`_vgsl_d24de941__fbmSimplex2d`,parameterNames:[`position`,`octaves`,`lacunarity`,`gain`]},{name:`gradIndex2`,resolvedName:`_vgsl_0bcbcb67__gradIndex2`,parameterNames:[`cell`]},{name:`gradDot2`,resolvedName:`_vgsl_0bcbcb67__gradDot2`,parameterNames:[`index`,`d`]},{name:`pcg2d`,resolvedName:`_vgsl_f8538ee3__pcg2d`,parameterNames:[`value`]},{name:`unitFloat`,resolvedName:`_vgsl_f8538ee3__unitFloat`,parameterNames:[`hash`]},{name:`hash2`,resolvedName:`_vgsl_f8538ee3__hash2`,parameterNames:[`seed`]},{name:`srgbToLinear`,resolvedName:`_vgsl_b183bc8f__srgbToLinear`,parameterNames:[`value`]},{name:`srgbToLinear3`,resolvedName:`_vgsl_b183bc8f__srgbToLinear3`,parameterNames:[`value`]},{name:`linearToSrgb`,resolvedName:`_vgsl_b183bc8f__linearToSrgb`,parameterNames:[`value`]},{name:`linearToSrgb3`,resolvedName:`_vgsl_b183bc8f__linearToSrgb3`,parameterNames:[`value`]}]},defaults:{amount:.75,grain:.006,top:[1,1,1],bottom:[.957,.976,.992],glow:[.78,.89,.97]},startTime:12}},Gc=1800,Kc=45,qc=null;function Jc(){return qc??=Uc({powerPreference:`low-power`}).then(e=>{let t={gpu:e,layers:new Set,pool:new Map,loop:null,last:0,dead:!1},n=!1;return e.onError(e=>{n||console.warn(`[vgpu]`,e),n=!0}),e.gpu.lost.then(e=>{if(e.reason!==`destroyed`){t.dead=!0,t.loop?.stop(),t.loop=null,qc=null;for(let e of t.layers)e.onLost?.();t.layers.clear()}}),t}).catch(e=>{throw qc=null,e}),qc}function Yc(e){return{...e.extra,time:e.time,resolution:e.size,pointer:e.pointer}}function Xc(e){e.firstFrameSent||(e.firstFrameSent=!0,e.onFirstFrame?.())}function Zc(e){let t=!1;for(let n of e.layers)n.playing&&(t=!0);t&&!e.loop&&!e.dead?(e.last=performance.now(),e.loop=Ec(e.gpu,t=>{let n=performance.now(),r=Math.min(.1,(n-e.last)/1e3);e.last=n;for(let n of e.layers)n.playing&&(n.time=(n.time+r)%Gc,n.pointer[0]+=(n.pointerGoal[0]-n.pointer[0])*.06,n.pointer[1]+=(n.pointerGoal[1]-n.pointer[1])*.06,n.fx.set({params:Yc(n)}),t.pass(n.target,n.fx),Xc(n))},{fps:Kc})):!t&&e.loop&&(e.loop.stop(),e.loop=null)}function Qc(e){if(e?.aborted)throw new DOMException(`Montaje cancelado`,`AbortError`)}async function $c(e){let t=Wc[e.shader],n=await Jc();Qc(e.signal);let r=Fo(n.gpu,e.canvas,{dpr:[1,1.5],alphaMode:`opaque`}),i=n.pool.get(e.shader)?.pop(),a={shader:e.shader,target:r,fx:i??bc(n.gpu,t.source,{label:`fondo:${e.shader}`}),extra:{...t.defaults,...e.uniforms},time:e.startTime??t.startTime??0,size:[Math.max(1,r.size[0]),Math.max(1,r.size[1])],pointer:[.5,.5],pointerGoal:[.5,.5],playing:!1,firstFrameSent:!1,onFirstFrame:e.onFirstFrame,onLost:e.onLost};try{a.fx.set({params:Yc(a)}),i||await a.fx.compile({colors:[r.format]}),Qc(e.signal)}catch(t){throw r.dispose(),n.pool.set(e.shader,[...n.pool.get(e.shader)??[],a.fx]),t}let o=!1,s=0,c=()=>{s||a.playing||o||n.dead||(s=requestAnimationFrame(()=>{s=0,!(a.playing||o||n.dead)&&(a.fx.set({params:Yc(a)}),Tc(n.gpu,e=>e.pass(r,a.fx)),Xc(a))}))},l=r.onResize(e=>{a.size=[Math.max(1,e.width),Math.max(1,e.height)],c()}),u=new ResizeObserver(()=>c());return u.observe(e.canvas),n.layers.add(a),c(),{setPointer(e,t){a.pointerGoal[0]=Math.min(1,Math.max(0,e)),a.pointerGoal[1]=Math.min(1,Math.max(0,t))},setUniforms(e){a.extra={...a.extra,...e},c()},setPlaying(e){o||a.playing===e||(a.playing=e,Zc(n),e||c())},dispose(){o||(o=!0,cancelAnimationFrame(s),u.disconnect(),l(),n.layers.delete(a),Zc(n),n.dead||(r.dispose(),n.pool.set(a.shader,[...n.pool.get(a.shader)??[],a.fx])))}}}export{$c as mountShader};
+`,functionExports:[{name:`simplex2d`,resolvedName:`_vgsl_d24de941__simplex2d`,parameterNames:[`position`]},{name:`gradIndex2`,resolvedName:`_vgsl_0bcbcb67__gradIndex2`,parameterNames:[`cell`]},{name:`gradDot2`,resolvedName:`_vgsl_0bcbcb67__gradDot2`,parameterNames:[`index`,`d`]},{name:`pcg2d`,resolvedName:`_vgsl_f8538ee3__pcg2d`,parameterNames:[`value`]},{name:`unitFloat`,resolvedName:`_vgsl_f8538ee3__unitFloat`,parameterNames:[`hash`]},{name:`hash2`,resolvedName:`_vgsl_f8538ee3__hash2`,parameterNames:[`seed`]},{name:`srgbToLinear`,resolvedName:`_vgsl_b183bc8f__srgbToLinear`,parameterNames:[`value`]},{name:`srgbToLinear3`,resolvedName:`_vgsl_b183bc8f__srgbToLinear3`,parameterNames:[`value`]},{name:`linearToSrgb`,resolvedName:`_vgsl_b183bc8f__linearToSrgb`,parameterNames:[`value`]},{name:`linearToSrgb3`,resolvedName:`_vgsl_b183bc8f__linearToSrgb3`,parameterNames:[`value`]}]},defaults:{amount:.85,grain:.004,top:[1,1,1],bottom:[.957,.976,.992],glow:[.78,.89,.97]},startTime:0}},Gc=1200,Kc=()=>matchMedia(`(pointer: coarse), (max-width: 767px)`).matches,qc=()=>Kc()?24:30,Jc=()=>Kc()?.5:.75,Yc=null;function Xc(){return Yc??=Uc({powerPreference:`low-power`}).then(e=>{let t={gpu:e,layers:new Set,pool:new Map,loop:null,last:0,dead:!1},n=!1;return e.onError(e=>{n||console.warn(`[vgpu]`,e),n=!0}),e.gpu.lost.then(e=>{if(e.reason!==`destroyed`){t.dead=!0,t.loop?.stop(),t.loop=null,Yc=null;for(let e of t.layers)e.onLost?.();t.layers.clear()}}),t}).catch(e=>{throw Yc=null,e}),Yc}function Zc(e){return{...e.extra,time:e.time,resolution:e.size,pointer:e.pointer}}function Qc(e){e.firstFrameSent||(e.firstFrameSent=!0,e.onFirstFrame?.())}function $c(e){let t=!1;for(let n of e.layers)n.playing&&(t=!0);t&&!e.loop&&!e.dead?(e.last=performance.now(),e.loop=Ec(e.gpu,t=>{let n=performance.now(),r=Math.min(.25,(n-e.last)/1e3);e.last=n;for(let n of e.layers)n.playing&&(n.time=(n.time+r)%Gc,n.pointer[0]+=(n.pointerGoal[0]-n.pointer[0])*.06,n.pointer[1]+=(n.pointerGoal[1]-n.pointer[1])*.06,n.fx.set({params:Zc(n)}),t.pass(n.target,n.fx),Qc(n))},{fps:qc()})):!t&&e.loop&&(e.loop.stop(),e.loop=null)}function el(e){if(e?.aborted)throw new DOMException(`Montaje cancelado`,`AbortError`)}async function tl(e){let t=Wc[e.shader],n=await Xc();el(e.signal);let r=Fo(n.gpu,e.canvas,{dpr:Jc(),alphaMode:`opaque`}),i=n.pool.get(e.shader)?.pop(),a={shader:e.shader,target:r,fx:i??bc(n.gpu,t.source,{label:`fondo:${e.shader}`}),extra:{...t.defaults,...e.uniforms},time:e.startTime??t.startTime??0,size:[Math.max(1,r.size[0]),Math.max(1,r.size[1])],pointer:[.5,.5],pointerGoal:[.5,.5],playing:!1,firstFrameSent:!1,onFirstFrame:e.onFirstFrame,onLost:e.onLost};try{a.fx.set({params:Zc(a)}),i||await a.fx.compile({colors:[r.format]}),el(e.signal)}catch(t){throw r.dispose(),n.pool.set(e.shader,[...n.pool.get(e.shader)??[],a.fx]),t}let o=!1,s=0,c=()=>{s||a.playing||o||n.dead||(s=requestAnimationFrame(()=>{s=0,!(a.playing||o||n.dead)&&(a.fx.set({params:Zc(a)}),Tc(n.gpu,e=>e.pass(r,a.fx)),Qc(a))}))},l=r.onResize(e=>{a.size=[Math.max(1,e.width),Math.max(1,e.height)],c()}),u=new ResizeObserver(()=>c());return u.observe(e.canvas),n.layers.add(a),c(),{setPointer(e,t){a.pointerGoal[0]=Math.min(1,Math.max(0,e)),a.pointerGoal[1]=Math.min(1,Math.max(0,t))},setUniforms(e){a.extra={...a.extra,...e},c()},setPlaying(e){o||a.playing===e||(a.playing=e,$c(n),e||c())},dispose(){o||(o=!0,cancelAnimationFrame(s),u.disconnect(),l(),n.layers.delete(a),$c(n),n.dead||(r.dispose(),n.pool.set(a.shader,[...n.pool.get(a.shader)??[],a.fx])))}}}export{tl as mountShader};
