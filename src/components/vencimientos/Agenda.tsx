@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 import type { Vencimiento } from "../../data/types";
@@ -19,6 +20,8 @@ export function Agenda({ items, hoy, filtro }: Props) {
   const upcoming = withDays.filter((x) => x.dias >= 0).map((x) => x.v);
   const past = withDays.filter((x) => x.dias < 0).map((x) => x.v);
   const deFiltro = filtro ? ` de ${filtro}` : "";
+  const ancho = useAncho();
+  const lista = groupByMonth(upcoming).map((g) => <MonthGroup key={g.key} month={g.month} items={g.items} hoy={hoy} />);
 
   return (
     <div className="min-w-0">
@@ -41,11 +44,24 @@ export function Agenda({ items, hoy, filtro }: Props) {
       </div>
 
       {upcoming.length ? (
-        <div className="mt-6 space-y-8">
-          {groupByMonth(upcoming).map((g) => (
-            <MonthGroup key={g.key} month={g.month} items={g.items} hoy={hoy} />
-          ))}
-        </div>
+        ancho ? (
+          <div className="mt-6 space-y-8">{lista}</div>
+        ) : (
+          // En el celular la agenda repite lo que ya muestran el próximo vencimiento y el calendario:
+          // queda detrás de un gesto.
+          <details className="group mt-6 border-y border-line [&_summary::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold text-ink select-none hover:text-brand">
+              <span>
+                Ver la lista por mes <span className="font-normal text-ink-3 tabular">({upcoming.length})</span>
+              </span>
+              <ChevronDown
+                className="size-5 shrink-0 text-ink-3 transition-transform motion-reduce:transition-none duration-200 group-open:rotate-180"
+                aria-hidden="true"
+              />
+            </summary>
+            <div className="space-y-8 pt-2 pb-6">{lista}</div>
+          </details>
+        )
       ) : (
         <div className="mt-6 rounded-xl bg-surface-2 px-5 py-8">
           <p className="font-semibold text-ink">No hay próximos vencimientos{deFiltro} en este calendario.</p>
@@ -60,7 +76,7 @@ export function Agenda({ items, hoy, filtro }: Props) {
               Vencimientos anteriores <span className="font-normal text-ink-3 tabular">({past.length})</span>
             </span>
             <ChevronDown
-              className="size-5 shrink-0 text-ink-3 transition-transform duration-200 group-open:rotate-180"
+              className="size-5 shrink-0 text-ink-3 transition-transform motion-reduce:transition-none duration-200 group-open:rotate-180"
               aria-hidden="true"
             />
           </summary>
@@ -73,6 +89,19 @@ export function Agenda({ items, hoy, filtro }: Props) {
       ) : null}
     </div>
   );
+}
+
+/** Desde lg la agenda es una columna propia y va abierta; debajo, apilada, va plegada. */
+function useAncho() {
+  const query = "(min-width: 64rem)";
+  const [ancho, setAncho] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const on = () => setAncho(mq.matches);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+  }, []);
+  return ancho;
 }
 
 function MonthGroup({
@@ -108,7 +137,7 @@ function MonthGroup({
                 </p>
                 <ul className="mt-2 space-y-3">
                   {list.map((v) => (
-                    <li key={vencKey(v)} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                    <li key={vencKey(v)} className="flex flex-col gap-3 max-sm:coarse:gap-7 sm:flex-row sm:items-center sm:gap-4">
                       <div className="min-w-0 flex-1">
                         <p className={clsx("font-semibold", past ? "text-ink-2" : "text-ink")}>{v.titulo}</p>
                         {/* En el celular, detalle e impuesto en líneas separadas: el "·" nunca queda colgando. */}

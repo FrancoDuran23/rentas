@@ -16,10 +16,10 @@
   --surface-2: #f4f6f9;
   --surface-3: #e9edf3;
   --ink: #0b0f19;
-  --ink-2: #333a47;
-  --ink-3: #565e6c;
-  --line: #e1e6ee;
-  --line-strong: #c4ccd8;
+  --ink-2: #2a303b;
+  --ink-3: #4a5260;
+  --line: #d3d9e3;
+  --line-strong: #aeb8c6;
 
   /* Marca: azul del isologo de Rentas (#0068A3, AA sobre blanco: 6:1).
      --celeste es el tono claro del logo, sólo para detalles sin texto. */
@@ -32,6 +32,9 @@
   --veil-1: rgb(37 129 198 / 0.16);
   --veil-2: rgb(37 129 198 / 0.11);
   --veil-band: rgb(37 129 198 / 0.1);
+  --veil-hero-1: rgb(37 129 198 / 0.3);
+  --veil-hero-2: rgb(93 176 230 / 0.34);
+  --veil-hero-3: rgb(37 129 198 / 0.16);
 
   --ok: #12733a;
   --ok-soft: #e7f4ec;
@@ -54,10 +57,10 @@
   --surface-2: #171f2b;
   --surface-3: #1f2937;
   --ink: #eef2f7;
-  --ink-2: #c5ccd7;
-  --ink-3: #9ba4b3;
-  --line: #253041;
-  --line-strong: #364459;
+  --ink-2: #d2d8e1;
+  --ink-3: #aeb6c3;
+  --line: #2e3a4d;
+  --line-strong: #46556c;
   --brand: #5cb3ea;
   --brand-hover: #8dcaf1;
   --brand-ink: #031a2b;
@@ -66,6 +69,9 @@
   --veil-1: rgb(40 110 170 / 0.24);
   --veil-2: rgb(40 110 170 / 0.15);
   --veil-band: rgb(40 110 170 / 0.16);
+  --veil-hero-1: rgb(46 128 196 / 0.34);
+  --veil-hero-2: rgb(40 110 170 / 0.3);
+  --veil-hero-3: rgb(40 110 170 / 0.16);
   --ok: #6fd39a;
   --ok-soft: #12291c;
   --warn: #f2bb5c;
@@ -84,10 +90,10 @@
     --surface-2: #171f2b;
     --surface-3: #1f2937;
     --ink: #eef2f7;
-    --ink-2: #c5ccd7;
-    --ink-3: #9ba4b3;
-    --line: #253041;
-    --line-strong: #364459;
+    --ink-2: #d2d8e1;
+    --ink-3: #aeb6c3;
+    --line: #2e3a4d;
+    --line-strong: #46556c;
     --brand: #5cb3ea;
     --brand-hover: #8dcaf1;
     --brand-ink: #031a2b;
@@ -96,6 +102,9 @@
     --veil-1: rgb(40 110 170 / 0.24);
     --veil-2: rgb(40 110 170 / 0.15);
     --veil-band: rgb(40 110 170 / 0.16);
+    --veil-hero-1: rgb(46 128 196 / 0.34);
+    --veil-hero-2: rgb(40 110 170 / 0.3);
+    --veil-hero-3: rgb(40 110 170 / 0.16);
     --ok: #6fd39a;
     --ok-soft: #12291c;
     --warn: #f2bb5c;
@@ -226,8 +235,10 @@
     box-shadow: 0 0 0 5px var(--focus-ink);
     border-radius: 4px;
   }
+  /* !important: el fondo de variante de un ButtonLink (bg-brand, capa utilities) le ganaba al amarillo
+     y dejaba texto focus-ink sobre azul (3,2:1). */
   a:focus-visible {
-    background-color: var(--focus);
+    background-color: var(--focus) !important;
     color: var(--focus-ink) !important;
     text-decoration: none;
     outline: none;
@@ -310,32 +321,34 @@
   }
 
   .veil-hero::before {
-    left: 50%;
-    top: -35%;
-    width: 62%;
-    height: 125%;
-    background: radial-gradient(closest-side, var(--veil-1), transparent);
+    left: 43%;
+    top: -55%;
+    width: 70%;
+    height: 150%;
+    background: radial-gradient(closest-side, var(--veil-hero-1), transparent);
+    /* Elipse cerrada de 48 puntos a velocidad constante: linear y sin alternate (que frenaba en cada
+       extremo); con 12 puntos los quiebres de dirección cada ~2 s se veían como tirones. */
+    animation: veil-hero-a 9s linear infinite;
   }
   .veil-hero::after {
-    left: 70%;
-    top: 30%;
-    width: 52%;
-    height: 115%;
-    background: radial-gradient(closest-side, var(--veil-2), transparent);
+    left: 67.5%;
+    top: 25%;
+    width: 55%;
+    height: 120%;
+    background: radial-gradient(closest-side, var(--veil-hero-2), transparent);
+    animation: veil-hero-b 12s linear -5s infinite;
   }
   @media (max-width: 767px) {
-    /* Vertical: una luz grande arriba a la derecha y otra abajo a la izquierda. */
+    /* Una masa arriba a la derecha; mitad inferior sin luz (contraste en "Más buscados"). */
     .veil-hero::before {
-      left: 30%;
-      top: -22%;
-      width: 115%;
-      height: 62%;
+      left: 38%;
+      top: -18%;
+      width: 95%;
+      height: 52%;
+      background: radial-gradient(closest-side, var(--veil-hero-1), transparent);
     }
     .veil-hero::after {
-      left: -45%;
-      top: 58%;
-      width: 100%;
-      height: 50%;
+      display: none;
     }
   }
 
@@ -379,6 +392,109 @@
     }
   }
 
+  @keyframes veil-hero-a {
+    0% { transform: translate3d(18.00%, 0.00%, 0) scale(1.0000); }
+    2.083% { transform: translate3d(17.85%, 1.57%, 0) scale(1.0003); }
+    4.167% { transform: translate3d(17.39%, 3.11%, 0) scale(1.0014); }
+    6.25% { transform: translate3d(16.63%, 4.59%, 0) scale(1.0030); }
+    8.333% { transform: translate3d(15.59%, 6.00%, 0) scale(1.0054); }
+    10.417% { transform: translate3d(14.28%, 7.31%, 0) scale(1.0083); }
+    12.5% { transform: translate3d(12.73%, 8.49%, 0) scale(1.0117); }
+    14.583% { transform: translate3d(10.96%, 9.52%, 0) scale(1.0156); }
+    16.667% { transform: translate3d(9.00%, 10.39%, 0) scale(1.0200); }
+    18.75% { transform: translate3d(6.89%, 11.09%, 0) scale(1.0247); }
+    20.833% { transform: translate3d(4.66%, 11.59%, 0) scale(1.0296); }
+    22.917% { transform: translate3d(2.35%, 11.90%, 0) scale(1.0348); }
+    25% { transform: translate3d(0.00%, 12.00%, 0) scale(1.0400); }
+    27.083% { transform: translate3d(-2.35%, 11.90%, 0) scale(1.0452); }
+    29.167% { transform: translate3d(-4.66%, 11.59%, 0) scale(1.0504); }
+    31.25% { transform: translate3d(-6.89%, 11.09%, 0) scale(1.0553); }
+    33.333% { transform: translate3d(-9.00%, 10.39%, 0) scale(1.0600); }
+    35.417% { transform: translate3d(-10.96%, 9.52%, 0) scale(1.0644); }
+    37.5% { transform: translate3d(-12.73%, 8.49%, 0) scale(1.0683); }
+    39.583% { transform: translate3d(-14.28%, 7.31%, 0) scale(1.0717); }
+    41.667% { transform: translate3d(-15.59%, 6.00%, 0) scale(1.0746); }
+    43.75% { transform: translate3d(-16.63%, 4.59%, 0) scale(1.0770); }
+    45.833% { transform: translate3d(-17.39%, 3.11%, 0) scale(1.0786); }
+    47.917% { transform: translate3d(-17.85%, 1.57%, 0) scale(1.0797); }
+    50% { transform: translate3d(-18.00%, 0.00%, 0) scale(1.0800); }
+    52.083% { transform: translate3d(-17.85%, -1.57%, 0) scale(1.0797); }
+    54.167% { transform: translate3d(-17.39%, -3.11%, 0) scale(1.0786); }
+    56.25% { transform: translate3d(-16.63%, -4.59%, 0) scale(1.0770); }
+    58.333% { transform: translate3d(-15.59%, -6.00%, 0) scale(1.0746); }
+    60.417% { transform: translate3d(-14.28%, -7.31%, 0) scale(1.0717); }
+    62.5% { transform: translate3d(-12.73%, -8.49%, 0) scale(1.0683); }
+    64.583% { transform: translate3d(-10.96%, -9.52%, 0) scale(1.0644); }
+    66.667% { transform: translate3d(-9.00%, -10.39%, 0) scale(1.0600); }
+    68.75% { transform: translate3d(-6.89%, -11.09%, 0) scale(1.0553); }
+    70.833% { transform: translate3d(-4.66%, -11.59%, 0) scale(1.0504); }
+    72.917% { transform: translate3d(-2.35%, -11.90%, 0) scale(1.0452); }
+    75% { transform: translate3d(-0.00%, -12.00%, 0) scale(1.0400); }
+    77.083% { transform: translate3d(2.35%, -11.90%, 0) scale(1.0348); }
+    79.167% { transform: translate3d(4.66%, -11.59%, 0) scale(1.0296); }
+    81.25% { transform: translate3d(6.89%, -11.09%, 0) scale(1.0247); }
+    83.333% { transform: translate3d(9.00%, -10.39%, 0) scale(1.0200); }
+    85.417% { transform: translate3d(10.96%, -9.52%, 0) scale(1.0156); }
+    87.5% { transform: translate3d(12.73%, -8.49%, 0) scale(1.0117); }
+    89.583% { transform: translate3d(14.28%, -7.31%, 0) scale(1.0083); }
+    91.667% { transform: translate3d(15.59%, -6.00%, 0) scale(1.0054); }
+    93.75% { transform: translate3d(16.63%, -4.59%, 0) scale(1.0030); }
+    95.833% { transform: translate3d(17.39%, -3.11%, 0) scale(1.0014); }
+    97.917% { transform: translate3d(17.85%, -1.57%, 0) scale(1.0003); }
+    100% { transform: translate3d(18.00%, -0.00%, 0) scale(1.0000); }
+  }
+  @keyframes veil-hero-b {
+    0% { transform: translate3d(-8.08%, 12.08%, 0) scale(1.0600); }
+    2.083% { transform: translate3d(-6.21%, 12.90%, 0) scale(1.0597); }
+    4.167% { transform: translate3d(-4.23%, 13.50%, 0) scale(1.0590); }
+    6.25% { transform: translate3d(-2.18%, 13.87%, 0) scale(1.0577); }
+    8.333% { transform: translate3d(-0.09%, 14.00%, 0) scale(1.0560); }
+    10.417% { transform: translate3d(2.00%, 13.89%, 0) scale(1.0538); }
+    12.5% { transform: translate3d(4.05%, 13.54%, 0) scale(1.0512); }
+    14.583% { transform: translate3d(6.04%, 12.96%, 0) scale(1.0483); }
+    16.667% { transform: translate3d(7.92%, 12.16%, 0) scale(1.0450); }
+    18.75% { transform: translate3d(9.67%, 11.15%, 0) scale(1.0415); }
+    20.833% { transform: translate3d(11.25%, 9.95%, 0) scale(1.0378); }
+    22.917% { transform: translate3d(12.64%, 8.58%, 0) scale(1.0339); }
+    25% { transform: translate3d(13.81%, 7.07%, 0) scale(1.0300); }
+    27.083% { transform: translate3d(14.75%, 5.43%, 0) scale(1.0261); }
+    29.167% { transform: translate3d(15.43%, 3.70%, 0) scale(1.0222); }
+    31.25% { transform: translate3d(15.85%, 1.91%, 0) scale(1.0185); }
+    33.333% { transform: translate3d(16.00%, 0.08%, 0) scale(1.0150); }
+    35.417% { transform: translate3d(15.87%, -1.75%, 0) scale(1.0117); }
+    37.5% { transform: translate3d(15.48%, -3.55%, 0) scale(1.0088); }
+    39.583% { transform: translate3d(14.82%, -5.28%, 0) scale(1.0062); }
+    41.667% { transform: translate3d(13.90%, -6.93%, 0) scale(1.0040); }
+    43.75% { transform: translate3d(12.75%, -8.46%, 0) scale(1.0023); }
+    45.833% { transform: translate3d(11.38%, -9.84%, 0) scale(1.0010); }
+    47.917% { transform: translate3d(9.81%, -11.06%, 0) scale(1.0003); }
+    50% { transform: translate3d(8.08%, -12.08%, 0) scale(1.0000); }
+    52.083% { transform: translate3d(6.21%, -12.90%, 0) scale(1.0003); }
+    54.167% { transform: translate3d(4.23%, -13.50%, 0) scale(1.0010); }
+    56.25% { transform: translate3d(2.18%, -13.87%, 0) scale(1.0023); }
+    58.333% { transform: translate3d(0.09%, -14.00%, 0) scale(1.0040); }
+    60.417% { transform: translate3d(-2.00%, -13.89%, 0) scale(1.0062); }
+    62.5% { transform: translate3d(-4.05%, -13.54%, 0) scale(1.0088); }
+    64.583% { transform: translate3d(-6.04%, -12.96%, 0) scale(1.0117); }
+    66.667% { transform: translate3d(-7.92%, -12.16%, 0) scale(1.0150); }
+    68.75% { transform: translate3d(-9.67%, -11.15%, 0) scale(1.0185); }
+    70.833% { transform: translate3d(-11.25%, -9.95%, 0) scale(1.0222); }
+    72.917% { transform: translate3d(-12.64%, -8.58%, 0) scale(1.0261); }
+    75% { transform: translate3d(-13.81%, -7.07%, 0) scale(1.0300); }
+    77.083% { transform: translate3d(-14.75%, -5.43%, 0) scale(1.0339); }
+    79.167% { transform: translate3d(-15.43%, -3.70%, 0) scale(1.0378); }
+    81.25% { transform: translate3d(-15.85%, -1.91%, 0) scale(1.0415); }
+    83.333% { transform: translate3d(-16.00%, -0.08%, 0) scale(1.0450); }
+    85.417% { transform: translate3d(-15.87%, 1.75%, 0) scale(1.0483); }
+    87.5% { transform: translate3d(-15.48%, 3.55%, 0) scale(1.0512); }
+    89.583% { transform: translate3d(-14.82%, 5.28%, 0) scale(1.0538); }
+    91.667% { transform: translate3d(-13.90%, 6.93%, 0) scale(1.0560); }
+    93.75% { transform: translate3d(-12.75%, 8.46%, 0) scale(1.0577); }
+    95.833% { transform: translate3d(-11.38%, 9.84%, 0) scale(1.0590); }
+    97.917% { transform: translate3d(-9.81%, 11.06%, 0) scale(1.0597); }
+    100% { transform: translate3d(-8.08%, 12.08%, 0) scale(1.0600); }
+  }
+
   /* Con el shader en pantalla, el velo CSS de la portada queda quieto debajo. */
   :root[data-gpu="on"] .veil-hero::before,
   :root[data-gpu="on"] .veil-hero::after {
@@ -392,6 +508,21 @@
   }
 }
 
+/*
+ * Área de toque de un enlace o botón suelto (fuera de prosa) sin mover el layout:
+ * 24px de alto con puntero y 44px en pantallas táctiles. El padding agranda la caja;
+ * el margen negativo lo devuelve (en elementos en línea el margen vertical no cuenta,
+ * y el padding tampoco empuja las líneas).
+ */
+@utility hit {
+  padding-block: 0.25rem;
+  margin-block: -0.25rem;
+  @media (pointer: coarse) {
+    padding-block: 0.875rem;
+    margin-block: -0.875rem;
+  }
+}
+
 @layer utilities {
   .tabular {
     font-variant-numeric: tabular-nums;
@@ -400,6 +531,27 @@
     from {
       opacity: 0;
       transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /* Entrada de un aviso del carrusel según la dirección (Carrusel.tsx). */
+  @keyframes aviso-entra-der {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes aviso-entra-izq {
+    from {
+      opacity: 0;
+      transform: translateX(-24px);
     }
     to {
       opacity: 1;

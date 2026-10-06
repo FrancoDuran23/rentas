@@ -7,7 +7,7 @@ import { SmartLink } from "../ui/primitives";
  * centrado, para que la "X" no quede corrida respecto de las otras redes.
  */
 const REDES_LINK =
-  "link font-semibold coarse:relative coarse:inline-flex coarse:min-h-11 coarse:items-center coarse:before:absolute coarse:before:inset-y-0 coarse:before:left-1/2 coarse:before:w-11 coarse:before:-translate-x-1/2";
+  "link -mx-2 px-2 font-semibold coarse:relative coarse:inline-flex coarse:min-h-11 coarse:items-center coarse:before:absolute coarse:before:inset-y-0 coarse:before:left-1/2 coarse:before:w-11 coarse:before:-translate-x-1/2";
 
 /** Cierre con las cuentas oficiales (REDES), como una línea de enlaces. */
 export function Seguinos() {

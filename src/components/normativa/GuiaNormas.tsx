@@ -1,6 +1,6 @@
 import { ArrowUpRight } from "lucide-react";
 import { LINKS } from "../../data/site";
-import { SmartLink } from "../ui/primitives";
+import { Disclosure, SmartLink } from "../ui/primitives";
 
 const TIPOS_EXPLICADOS: { nombre: string; texto: string }[] = [
   {
@@ -33,16 +33,16 @@ export function GuiaNormas({ id }: { id: string }) {
       <h2 id={id} className="text-xl font-bold text-ink">
         ¿Qué es cada norma?
       </h2>
-      <dl className="mt-4">
+      {/* La explicación de cada tipo, detrás de un gesto: visible queda el nombre. */}
+      <div className="mt-2">
         {TIPOS_EXPLICADOS.map((t) => (
-          <div key={t.nombre} className="border-t border-line py-3.5 first:border-t-0 first:pt-0">
-            <dt className="font-semibold text-ink">{t.nombre}</dt>
-            <dd className="mt-1 text-[0.95rem] text-ink-2">{t.texto}</dd>
-          </div>
+          <Disclosure key={t.nombre} summary={t.nombre}>
+            <p className="text-[0.95rem]">{t.texto}</p>
+          </Disclosure>
         ))}
-      </dl>
+      </div>
 
-      <div className="mt-2 border-t border-line pt-5">
+      <div className="mt-5">
         <h3 id={`${id}-fuentes`} className="font-semibold text-ink">
           Repositorios oficiales
         </h3>
@@ -57,7 +57,7 @@ export function GuiaNormas({ id }: { id: string }) {
           ))}
         </ul>
         <p className="mt-5 text-sm text-ink-3">
-          Esta página es una guía orientativa. El texto con validez legal es el publicado oficialmente.
+          Guía orientativa: vale el texto publicado oficialmente.
         </p>
       </div>
     </div>

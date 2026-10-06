@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router";
 import clsx from "clsx";
 import { ChevronDown, LogIn, Menu, Moon, Search, Sun, X } from "lucide-react";
-import { Logo } from "./Logo";
+import { Logo, LogoGobierno } from "./Logo";
 import { NAV, SHOW_PROTOTYPE_NOTICE } from "../../data/site";
 import { CONTACTO, PORTAL } from "../../data/contacto";
 import { useResolvedTheme, useTheme } from "../../lib/theme";
@@ -87,7 +87,7 @@ export function SiteHeader() {
       </a>
 
       {SHOW_PROTOTYPE_NOTICE ? (
-        <aside aria-label="Aviso de prototipo" className="border-b border-line bg-brand-soft px-4 py-1.5 text-center text-xs text-ink-2">
+        <aside aria-label="Aviso de prototipo" className="border-b border-line bg-brand-soft px-4 py-1.5 text-center text-sm text-ink-2">
           Propuesta de rediseño, prototipo no oficial. Los trámites se hacen en el{" "}
           <a href={PORTAL.sitioOficial} className="font-semibold underline underline-offset-2">
             sitio oficial
@@ -99,10 +99,14 @@ export function SiteHeader() {
       {/* Barra institucional (en pantallas bajas, como un celular apaisado, se oculta para ganar alto) */}
       <section
         aria-label="Barra institucional"
-        className="border-b border-line bg-surface-2 text-[0.8rem] text-ink-2 [@media(max-height:480px)]:hidden"
+        className="border-b border-line bg-surface-2 text-sm text-ink-2 [@media(max-height:480px)]:hidden"
       >
         <div className="container-page flex min-h-9 items-center justify-between gap-4 py-1.5">
-          <p className="truncate">Gobierno de Jujuy · Ministerio de Hacienda y Finanzas</p>
+          {/* La dependencia: logo de Gobierno de Jujuy (no texto) y el ministerio. */}
+          <p className="flex min-w-0 items-center gap-3">
+            <LogoGobierno className="flex shrink-0 [&_img]:h-6" />
+            <span className="truncate border-l border-line-strong pl-3">Ministerio de Hacienda y Finanzas</span>
+          </p>
           {/* Entre md y lg sólo entra el teléfono; la lista completa, desde lg. Nunca en dos líneas. */}
           <ul className="hidden items-center gap-5 whitespace-nowrap md:flex">
             <li>
@@ -136,7 +140,7 @@ export function SiteHeader() {
       >
         {/* Bajo 360px (22.5rem), menos aire y el botón del menú corrido 6px hacia el margen: así entran los tres controles de 44px. */}
         <div className="container-page flex h-16 items-center gap-3 max-[22.5rem]:gap-2 sm:gap-6 lg:h-[4.5rem] lg:gap-4 xl:gap-6">
-          <Link to="/" className="shrink-0 rounded-md" aria-label="Rentas Jujuy, ir al inicio" onClick={() => setMenuOpen(false)}>
+          <Link to="/" className="shrink-0 rounded-md coarse:py-0.5" aria-label="Rentas Jujuy, ir al inicio" onClick={() => setMenuOpen(false)}>
             <Logo />
           </Link>
 
@@ -175,7 +179,7 @@ export function SiteHeader() {
             >
               <Search className="size-4 shrink-0" aria-hidden="true" />
               <span className="flex-1">Buscar trámite</span>
-              <kbd className="rounded border border-line bg-surface-2 px-1.5 font-sans text-xs text-ink-3">/</kbd>
+              <kbd className="rounded-md border border-line bg-surface-2 px-1.5 font-sans text-sm text-ink-3">/</kbd>
             </button>
             <button
               type="button"
@@ -186,7 +190,14 @@ export function SiteHeader() {
               <Search className="size-5" aria-hidden="true" />
             </button>
             <ThemeToggle />
-            <ButtonLink to={PORTAL.clave.href} size="sm" className="max-sm:hidden">
+            <ButtonLink
+              to={PORTAL.clave.href}
+              size="sm"
+              className="max-sm:hidden"
+              // En /ingresar la acción primaria es "Ingresar" del formulario: acá no compite.
+              variant={pathname === PORTAL.clave.href ? "secondary" : "primary"}
+              aria-current={pathname === PORTAL.clave.href ? "page" : undefined}
+            >
               <LogIn aria-hidden="true" />
               <span className="xl:hidden">{PORTAL.clave.cta}</span>
               <span className="max-xl:hidden">{PORTAL.clave.ctaLargo}</span>
@@ -259,7 +270,7 @@ function NavDropdown({ item }: { item: (typeof NAV)[number] }) {
         )}
       >
         {item.label}
-        <ChevronDown className={clsx("size-4 transition-transform", open && "rotate-180")} aria-hidden="true" />
+        <ChevronDown className={clsx("size-4 transition-transform motion-reduce:transition-none", open && "rotate-180")} aria-hidden="true" />
       </button>
       {open ? (
         <div id="menu-impuestos" className="animate-pop absolute top-full left-0 z-50 w-[22rem] pt-px">

@@ -11,7 +11,7 @@ export function VencimientosImpuesto({ imp }: { imp: Impuesto }) {
   const hoy = today();
   const proximos = VENCIMIENTOS.filter((v) => v.impuesto === imp.slug && daysBetween(hoy, parseISODate(v.fecha)) >= 0)
     .sort((a, b) => a.fecha.localeCompare(b.fecha))
-    .slice(0, 5);
+    .slice(0, 3);
 
   if (!proximos.length) {
     return (
@@ -37,7 +37,7 @@ export function VencimientosImpuesto({ imp }: { imp: Impuesto }) {
             <li key={v.fecha + v.titulo} className="flex items-start gap-4 border-t border-line py-3.5 sm:items-center">
               <time dateTime={v.fecha} className="w-14 shrink-0 text-center leading-none">
                 <span className="block text-2xl font-bold tabular text-ink">{d.getDate()}</span>
-                <span className="mt-1 block text-xs font-semibold text-ink-3 uppercase">
+                <span className="mt-1 block text-sm font-semibold text-ink-3 uppercase">
                   {MES.format(d).replace(".", "")}
                 </span>
               </time>
@@ -56,7 +56,7 @@ export function VencimientosImpuesto({ imp }: { imp: Impuesto }) {
       </ol>
       {VENCIMIENTOS_INFO.ilustrativo ? (
         <p className="mt-3 text-sm text-ink-3">
-          Fechas orientativas basadas en el Calendario Impositivo 2026 ({VENCIMIENTOS_INFO.norma}).{" "}
+          Fechas orientativas.{" "}
           <SmartLink to={VENCIMIENTOS_INFO.oficial} className="link">
             Ver el calendario oficial
           </SmartLink>

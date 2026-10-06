@@ -138,7 +138,7 @@ export function SearchDialog({ open, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink coarse:size-11"
               aria-label="Cerrar buscador"
             >
               <X className="size-5" aria-hidden="true" />
@@ -297,7 +297,7 @@ export function SearchDialog({ open, onClose }: Props) {
 
 function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-line-strong bg-surface px-1.5 font-sans text-xs font-medium text-ink-2 [&_svg]:size-3.5">
+    <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-line-strong bg-surface px-1.5 font-sans text-sm font-medium text-ink-2 [&_svg]:size-3.5">
       {children}
     </kbd>
   );

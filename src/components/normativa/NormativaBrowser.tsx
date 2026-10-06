@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import clsx from "clsx";
@@ -74,6 +74,19 @@ export function NormativaBrowser({ normas }: { normas: Norma[] }) {
   }, [normas, terms, tipo, tema]);
 
   const hasFilters = Boolean(q.trim() || tipo || tema);
+
+  // Primero las más recientes; el resto, detrás de un gesto. Cambiar la búsqueda o un filtro vuelve a plegar.
+  const clave = `${q}|${tipo?.id ?? ""}|${tema?.id ?? ""}`;
+  const [abiertaPara, setAbiertaPara] = useState<string | null>(null);
+  const verTodas = abiertaPara === clave;
+  const visibles = verTodas ? results : results.slice(0, VISIBLES);
+  const restantes = results.length - visibles.length;
+  const tbodyRef = useRef<HTMLTableSectionElement>(null);
+  const mostrarTodas = () => {
+    setAbiertaPara(clave);
+    // El foco pasa a la primera norma que apareció (el botón desaparece).
+    requestAnimationFrame(() => tbodyRef.current?.rows[VISIBLES]?.querySelector<HTMLElement>("a, [tabindex]")?.focus());
+  };
   const sumTipo = [...tipoCounts.values()].reduce((a, b) => a + b, 0);
   const sumTema = [...temaCounts.values()].reduce((a, b) => a + b, 0);
 
@@ -192,24 +205,23 @@ export function NormativaBrowser({ normas }: { normas: Norma[] }) {
                 </th>
               </tr>
             </thead>
-            <tbody role="rowgroup" className="block border-b border-line md:table-row-group">
-              {results.map((n) => (
+            <tbody ref={tbodyRef} role="rowgroup" className="block border-b border-line md:table-row-group">
+              {visibles.map((n) => (
                 <NormaRow key={n.tipo + n.numero + n.anio} norma={n} terms={terms} />
               ))}
             </tbody>
           </table>
-          <p className="prose-measure mt-4 text-sm text-ink-3">
-            Esta es una selección de normas de referencia. Los enlaces llevan a la sección del sitio oficial de Rentas
-            donde se publica cada tipo de norma, para que consultes el texto completo.
-          </p>
+          {restantes > 0 ? (
+            <Button variant="secondary" className="mt-5" onClick={mostrarTodas}>
+              Ver {restantes} {restantes === 1 ? "norma más" : "normas más"}
+            </Button>
+          ) : null}
+          <p className="mt-4 text-sm text-ink-3">Selección de referencia: cada enlace abre su sección oficial.</p>
         </>
       ) : (
         <div className="mt-4 border-y border-line py-10">
           <h3 className="text-lg font-bold text-ink">No encontramos normas con esos filtros</h3>
-          <p className="prose-measure mt-2 text-ink-2">
-            Probá con otras palabras, revisá el número o limpiá los filtros. También podés buscar en los repositorios
-            oficiales que figuran en esta página.
-          </p>
+          <p className="mt-2 text-ink-2">Probá otras palabras, revisá el número o limpiá los filtros.</p>
           {hasFilters ? (
             <Button variant="secondary" className="mt-5" onClick={clearAll}>
               <X aria-hidden="true" />
@@ -221,6 +233,9 @@ export function NormativaBrowser({ normas }: { normas: Norma[] }) {
     </div>
   );
 }
+
+/** Normas visibles antes de "Ver N normas más". */
+const VISIBLES = 6;
 
 const TH = "border-b border-line-strong pb-3 pr-6 align-bottom text-sm font-semibold text-ink-2";
 const TD = "md:table-cell md:border-t md:border-line md:py-4 md:pr-6 md:align-top";
@@ -248,13 +263,11 @@ function NormaRow({ norma: n, terms }: { norma: Norma; terms: string[] }) {
         <Highlight text={n.titulo} terms={terms} />
       </td>
       <td role="cell" className={clsx(TD, "mt-1 text-sm text-ink-3 md:mt-0 md:text-[0.95rem] md:text-ink-2")}>
-        <span className="md:hidden">Tema: </span>
         <Highlight text={temaInfo(n.tema).label} terms={terms} />
       </td>
       <td role="cell" className={clsx(TD, "mt-1 text-sm md:mt-0 md:pr-0 md:text-[0.95rem]")}>
         {n.href ? (
-          // En táctil, el área de toque llega a 44px de alto sin mover el texto (py compensado con -my).
-          <SmartLink to={n.href} className="link whitespace-nowrap font-semibold coarse:-my-3 coarse:inline-block coarse:py-3">
+          <SmartLink to={n.href} className="link hit whitespace-nowrap font-semibold">
             <span className="sr-only">{normaLabel(n)} en el </span>
             Sitio oficial
             <ArrowUpRight className="ml-1 inline size-4 align-[-2px]" aria-hidden="true" />
@@ -287,7 +300,7 @@ function Chip({
       className={chipClass(active, "gap-2")}
     >
       {children}
-      <span className={clsx("text-xs tabular", active ? "text-bg/75" : "text-ink-3")}>
+      <span className={clsx("text-sm tabular", active ? "text-bg/75" : "text-ink-3")}>
         <span className="sr-only">(</span>
         {count}
         <span className="sr-only">)</span>

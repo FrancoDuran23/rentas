@@ -66,6 +66,12 @@ const router = createBrowserRouter(
           }),
         },
         {
+          path: "ingresar",
+          lazy: async () => ({
+            Component: (await import("./pages/IngresarPage")).IngresarPage,
+          }),
+        },
+        {
           path: "*",
           lazy: async () => ({
             Component: (await import("./pages/NotFoundPage")).NotFoundPage,

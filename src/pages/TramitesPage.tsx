@@ -76,7 +76,6 @@ export function TramitesPage() {
       <PageIntro
         title="Trámites"
         breadcrumbs={[{ label: "Trámites" }]}
-        description="Buscá por nombre o filtrá por impuesto y perfil. Casi todos los trámites se hacen en línea."
       >
         <form role="search" aria-label="Buscar trámites" onSubmit={(e) => e.preventDefault()} className="max-w-2xl">
           <label htmlFor="tramites-q" className="mb-2 block font-semibold text-ink">
@@ -116,13 +115,13 @@ export function TramitesPage() {
               <SlidersHorizontal aria-hidden="true" />
               Filtrar
               {filtrosActivos ? (
-                <span className="rounded-md bg-ink px-1.5 text-xs leading-5 font-semibold text-bg tabular">
+                <span className="rounded-md bg-ink px-1.5 text-sm leading-5 font-semibold text-bg tabular">
                   {filtrosActivos}
                   <span className="sr-only"> {filtrosActivos === 1 ? "filtro activo" : "filtros activos"}</span>
                 </span>
               ) : null}
             </span>
-            <ChevronDown className={clsx("ml-auto transition-transform", filtrosAbiertos && "rotate-180")} aria-hidden="true" />
+            <ChevronDown className={clsx("ml-auto transition-transform motion-reduce:transition-none", filtrosAbiertos && "rotate-180")} aria-hidden="true" />
           </button>
 
           <div
@@ -223,7 +222,6 @@ export function TramitesPage() {
                 key: t.id,
                 href: t.href,
                 title: t.titulo,
-                description: <span className="prose-measure block">{t.descripcion}</span>,
                 meta: (
                   <>
                     <Badge>{impuestoNombre(t.impuesto)}</Badge>

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { ArrowUp } from "lucide-react";
-import { Logo } from "./Logo";
+import { Logo, LogoGobierno } from "./Logo";
 import { SHOW_PROTOTYPE_NOTICE, SITE } from "../../data/site";
 import { CONTACTO, OFICINAS, PORTAL, REDES } from "../../data/contacto";
 import { TRAMITES } from "../../data/tramites";
@@ -15,7 +15,7 @@ import { SmartLink } from "../ui/primitives";
  * Seguinos).
  */
 const redesLink =
-  "link coarse:relative coarse:inline-flex coarse:min-h-11 coarse:items-center coarse:before:absolute coarse:before:inset-y-0 coarse:before:left-1/2 coarse:before:w-11 coarse:before:-translate-x-1/2";
+  "link -mx-2 px-2 coarse:relative coarse:inline-flex coarse:min-h-11 coarse:items-center coarse:before:absolute coarse:before:inset-y-0 coarse:before:left-1/2 coarse:before:w-11 coarse:before:-translate-x-1/2";
 
 export function SiteFooter() {
   const frecuentes = TRAMITES.filter((t) => t.destacado).slice(0, 5);
@@ -25,11 +25,12 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-line bg-surface-2 text-[0.95rem] text-ink-2">
       {/* Dos columnas hasta xl: a 1024px, cuatro dejaban "Atención" en ~214px y partían teléfono y correo. */}
-      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:gap-12 xl:grid-cols-[1.3fr_1fr_1fr_1.2fr]">
+      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:gap-12 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.2fr)]">
         <div>
-          <Link to="/" aria-label="Rentas Jujuy, ir al inicio" className="inline-flex rounded-md">
+          <Link to="/" aria-label="Rentas Jujuy, ir al inicio" className="inline-flex rounded-md coarse:-my-0.5 coarse:py-0.5">
             <Logo />
           </Link>
+          <LogoGobierno className="mt-4 flex w-fit" />
           <p className="mt-4 max-w-xs">{SITE.dependencia}</p>
           {REDES.length ? (
             <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1" aria-label="Redes sociales">
@@ -126,18 +127,18 @@ export function SiteFooter() {
               </p>
             ) : null}
           </div>
-          {/* En pantallas táctiles, objetivos de 44px de alto sin mover nada (py/-my). */}
+          {/* hit: 24px de alto con puntero y 44px táctil sin mover nada. */}
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <Link to="/ayuda" className="link coarse:-my-3 coarse:py-3">
+            <Link to="/ayuda" className="link hit">
               Centro de ayuda
             </Link>
-            <Link to="/noticias" className="link coarse:-my-3 coarse:py-3">
+            <Link to="/noticias" className="link hit">
               Noticias
             </Link>
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0 })}
-              className="inline-flex items-center gap-1 font-semibold text-ink-2 hover:text-ink coarse:-my-3 coarse:py-3"
+              className="inline-flex items-center gap-1 font-semibold text-ink-2 hover:text-ink hit"
             >
               <ArrowUp className="size-4" aria-hidden="true" />
               Volver arriba
@@ -153,8 +154,8 @@ function FooterNav({ title, children }: { title: string; children: ReactNode }) 
   return (
     <nav aria-label={title}>
       <h2 className="text-sm font-bold text-ink">{title}</h2>
-      {/* En pantallas táctiles los enlaces ocupan la fila (36px de alto) y el espacio entre ellos pasa al relleno. */}
-      <ul className="mt-3 grid gap-2 coarse:mt-1.5 coarse:gap-0 coarse:[&_a]:block coarse:[&_a]:py-1.5">{children}</ul>
+      {/* En pantallas táctiles los enlaces ocupan la fila (44px de alto) y el espacio entre ellos pasa al relleno. */}
+      <ul className="mt-3 grid gap-2 coarse:mt-1.5 coarse:gap-0 coarse:[&_a]:block coarse:[&_a]:py-2.5">{children}</ul>
     </nav>
   );
 }

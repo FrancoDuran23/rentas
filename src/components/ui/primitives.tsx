@@ -22,7 +22,7 @@ export function Badge({ tone = "neutral", className, children }: { tone?: Tone; 
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-semibold [&_svg]:size-3.5",
+        "inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-sm font-semibold [&_svg]:size-3.5",
         tones[tone],
         className,
       )}
@@ -124,7 +124,7 @@ export function SmartLink({
 export function ArrowLink({ to, children, className }: { to: string; children: ReactNode; className?: string }) {
   const external = /^https?:/.test(to);
   return (
-    <SmartLink to={to} className={clsx("link inline-flex items-center gap-1 font-semibold", className)}>
+    <SmartLink to={to} className={clsx("link hit inline-flex items-center gap-1 font-semibold", className)}>
       {children}
       {external ? (
         <ArrowUpRight className="size-4" aria-hidden="true" />
@@ -235,7 +235,7 @@ export function Disclosure({ summary, children, defaultOpen }: { summary: ReactN
     <details className="group border-b border-line [&_summary::-webkit-details-marker]:hidden" open={defaultOpen}>
       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 font-semibold text-ink hover:text-brand">
         {summary}
-        <ChevronDown className="size-5 shrink-0 text-ink-3 transition-transform group-open:rotate-180" aria-hidden="true" />
+        <ChevronDown className="size-5 shrink-0 text-ink-3 transition-transform motion-reduce:transition-none group-open:rotate-180" aria-hidden="true" />
       </summary>
       <div className="prose-measure pb-5 text-ink-2">{children}</div>
     </details>
@@ -254,7 +254,7 @@ export function Breadcrumbs({ items }: { items: { label: string; to?: string }[]
           <li key={i} className="flex items-center gap-1.5">
             {i > 0 ? <ChevronRight className="size-3.5" aria-hidden="true" /> : null}
             {it.to ? (
-              <Link to={it.to} className="link">
+              <Link to={it.to} className="link hit coarse:-mx-1.5 coarse:px-1.5">
                 {it.label}
               </Link>
             ) : (

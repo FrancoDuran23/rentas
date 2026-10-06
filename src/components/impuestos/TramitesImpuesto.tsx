@@ -12,7 +12,6 @@ export function TramitesImpuesto({ tramites }: { tramites: Tramite[] }) {
         key: t.id,
         href: t.href,
         title: t.titulo,
-        description: t.descripcion,
         meta: (
           <>
             {/* Canal = categoría, no estado: azul si se puede hacer en línea, neutro si es solo presencial. */}

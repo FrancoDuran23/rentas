@@ -103,7 +103,6 @@ export function VencimientosPage() {
     <AnnounceProvider>
       <PageIntro
         title="Calendario de vencimientos"
-        description="Consultá cuándo vence cada impuesto provincial, filtrá por lo que pagás y sumá las fechas a tu calendario para que no se te pase ninguna."
         breadcrumbs={[{ label: "Vencimientos" }]}
       />
 
@@ -113,11 +112,7 @@ export function VencimientosPage() {
       </div>
 
       <section aria-labelledby="calendario-titulo" className="container-page pt-14 pb-14 sm:pt-16 sm:pb-16">
-        <SectionHeader
-          id="calendario-titulo"
-          title="Todas las fechas"
-          description="Elegí un día para ver qué vence. Si filtrás por impuesto, el calendario y la agenda se actualizan juntos."
-        />
+        <SectionHeader id="calendario-titulo" title="Todas las fechas" />
 
         <ImpuestoFilter
           className="mt-6"

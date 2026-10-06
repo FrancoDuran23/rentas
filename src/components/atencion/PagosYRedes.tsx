@@ -3,7 +3,7 @@ import { Receipt, Smartphone, Store } from "lucide-react";
 import { MEDIOS_DE_PAGO, PORTAL, REDES } from "../../data/contacto";
 import { LINKS } from "../../data/site";
 import { ButtonLink } from "../ui/Button";
-import { ArrowLink, SectionHeader, SmartLink } from "../ui/primitives";
+import { ArrowLink, Disclosure, SectionHeader, SmartLink } from "../ui/primitives";
 
 export function PagosYRedes({ id }: { id: string }) {
   return (
@@ -14,28 +14,24 @@ export function PagosYRedes({ id }: { id: string }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
 function MediosDePago({ id }: { id: string }) {
   return (
     <section id={id} aria-labelledby={`${id}-titulo`} className="min-w-0">
-      <SectionHeader
-        id={`${id}-titulo`}
-        title="Medios de pago"
-        description="Pagá en línea desde el celular o la compu, o de forma presencial en las bocas de cobro habilitadas."
-      />
-
-      <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-8 sm:grid-cols-[repeat(2,minmax(0,1fr))]">
-        <Grupo titulo="En línea" icon={<Smartphone aria-hidden="true" />} items={MEDIOS_DE_PAGO.digitales} />
-        <Grupo titulo="Presenciales" icon={<Store aria-hidden="true" />} items={MEDIOS_DE_PAGO.presenciales} />
-      </div>
-
-      <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+      <SectionHeader id={`${id}-titulo`} title="Medios de pago" />
+      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
         <ButtonLink to={LINKS.pagar}>
           <Receipt aria-hidden="true" />
           Pagar en línea
         </ButtonLink>
         <ArrowLink to={LINKS.mediosDePago}>Medios y lugares de pago</ArrowLink>
+      </div>
+      <div className="mt-6 max-w-2xl">
+        <Disclosure summary="Medios aceptados">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-8 sm:grid-cols-[repeat(2,minmax(0,1fr))]">
+            <Grupo titulo="En línea" icon={<Smartphone aria-hidden="true" />} items={MEDIOS_DE_PAGO.digitales} />
+            <Grupo titulo="Presenciales" icon={<Store aria-hidden="true" />} items={MEDIOS_DE_PAGO.presenciales} />
+          </div>
+        </Disclosure>
       </div>
     </section>
   );
@@ -60,27 +56,15 @@ function Grupo({ titulo, icon, items }: { titulo: string; icon: ReactNode; items
   );
 }
 
-/* ------------------------------------------------------------------ */
-
-/**
- * Enlace a una red: en táctil, área de toque de al menos 44×44px (la "X" sola
- * mide 11px de ancho). El alto lo da min-h; el ancho, un ::before de 44px
- * centrado, para que la "X" no quede corrida respecto de las otras redes.
- */
 const REDES_LINK =
-  "link font-semibold coarse:relative coarse:inline-flex coarse:min-h-11 coarse:items-center coarse:before:absolute coarse:before:inset-y-0 coarse:before:left-1/2 coarse:before:w-11 coarse:before:-translate-x-1/2";
+  "link -mx-2 px-2 font-semibold coarse:relative coarse:inline-flex coarse:min-h-11 coarse:items-center coarse:before:absolute coarse:before:inset-y-0 coarse:before:left-1/2 coarse:before:w-11 coarse:before:-translate-x-1/2";
 
 function Redes() {
   return (
     <section aria-labelledby="redes-titulo" className="min-w-0">
-      <SectionHeader
-        id="redes-titulo"
-        title="Redes oficiales"
-        description="Las cuentas oficiales de la Dirección Provincial de Rentas."
-      />
+      <SectionHeader id="redes-titulo" title="Redes" />
       <ul className="mt-6 border-b border-line" aria-label="Redes sociales">
         {REDES.map((r) => (
-          // En táctil el py menor compensa el alto extra del enlace (ver REDES_LINK).
           <li key={r.href} className="flex flex-wrap items-baseline gap-x-2 border-t border-line py-3 coarse:py-1">
             <SmartLink to={r.href} className={REDES_LINK}>
               {r.nombre}
@@ -91,7 +75,6 @@ function Redes() {
         ))}
       </ul>
       <p className="mt-4 text-sm text-ink-3">
-        Sitio oficial:{" "}
         <SmartLink to={PORTAL.sitioOficial} className="link [overflow-wrap:anywhere]">
           {PORTAL.sitioOficial.replace(/^https?:\/\//, "")}
         </SmartLink>

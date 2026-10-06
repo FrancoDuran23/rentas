@@ -17,7 +17,6 @@ export function NormativaPage() {
       <PageIntro
         title="Normativa"
         breadcrumbs={[{ label: "Normativa" }]}
-        description="El Código Fiscal, la Ley Impositiva y las resoluciones que ordenan los impuestos provinciales. Buscá por número o tema y consultá el texto en el sitio oficial."
       />
 
       {hayClave ? (
@@ -31,11 +30,7 @@ export function NormativaPage() {
 
       <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-12 py-12 sm:py-16 xl:grid-cols-[minmax(0,1fr)_19rem] xl:gap-14">
         <section id="buscador" aria-labelledby="buscador-titulo" className="min-w-0 scroll-mt-24">
-          <SectionHeader
-            id="buscador-titulo"
-            title="Buscar una norma"
-            description="Filtrá por tipo o por impuesto, o escribí el número o una palabra clave."
-          />
+          <SectionHeader id="buscador-titulo" title="Buscar una norma" />
           <div className="mt-6">
             {NORMATIVA.length ? (
               <NormativaBrowser normas={NORMATIVA} />

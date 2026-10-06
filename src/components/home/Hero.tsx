@@ -1,34 +1,29 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
-import { Search } from "lucide-react";
+import { useNavigate } from "react-router";
+import { CreditCard, FileSearch, House, LockKeyhole, Search } from "lucide-react";
 import { ShaderCanvas } from "../../gpu/ShaderCanvas";
 import { LINKS } from "../../data/site";
 import { PORTAL } from "../../data/contacto";
 import { useResolvedTheme } from "../../lib/theme";
-import { SmartLink } from "../ui/primitives";
+import { AccionesHero } from "./acciones/AccionesHero";
+import type { Accion } from "./acciones/types";
 
-const MAS_BUSCADOS = [
-  { label: "Libre deuda", q: "libre deuda" },
-  { label: "Plan de pagos", q: "plan de pagos" },
-  { label: "Constancia de inscripción", q: "constancia" },
-  { label: "Sellos", q: "sellos" },
-];
-
-/** Accesos directos: uno por necesidad típica de cada perfil. */
-const ACCESOS = [
-  { href: PORTAL.clave.href, titulo: "Ingresar con clave fiscal", detalle: "DDJJ, certificados, planes de pago y más." },
-  { href: LINKS.inmobiliarioSinClave, titulo: "Pagar el Inmobiliario", detalle: "Con el padrón o el CUIT, sin clave fiscal." },
-  { href: PORTAL.turnos.href, titulo: "Sacar un turno", detalle: "Atención en Casa Central o en una delegación." },
+/** Las cuatro acciones del inicio oficial, en verbo. "Consultar" son los servicios sin clave fiscal. */
+const ACCIONES: Accion[] = [
+  { href: LINKS.pagar, label: "Pagar", icon: <CreditCard aria-hidden="true" /> },
+  { href: LINKS.serviciosSinClave, label: "Consultar", icon: <FileSearch aria-hidden="true" /> },
+  { href: PORTAL.clave.href, label: "Clave fiscal", icon: <LockKeyhole aria-hidden="true" /> },
+  { href: LINKS.inmobiliarioSinClave, label: "Pagar Inmobiliario", icon: <House aria-hidden="true" /> },
 ];
 
 /**
- * Colores del velo vgpu por tema (sRGB 0..1). En claro, el núcleo más
- * intenso no baja de #cfe5f6 detrás de los enlaces (≥ 4.5:1 con el azul);
- * en oscuro es un azul petróleo de croma baja, visible sin brillar.
+ * Colores del velo vgpu por tema (sRGB 0..1): el celeste de los arcos del
+ * isologo. Sobre la luz sólo hay tinta (título y etiqueta) y piezas con
+ * fondo propio (buscador y acciones), así que puede ser intensa.
  */
 const LUZ = {
-  light: { top: [1, 1, 1], bottom: [0.957, 0.976, 0.992], glow: [0.78, 0.89, 0.97], amount: 0.85 },
-  dark: { top: [0.051, 0.067, 0.09], bottom: [0.063, 0.09, 0.13], glow: [0.086, 0.188, 0.29], amount: 0.7 },
+  light: { top: [1, 1, 1], bottom: [0.93, 0.965, 0.99], glow: [0.55, 0.78, 0.94], amount: 0.9 },
+  dark: { top: [0.051, 0.067, 0.09], bottom: [0.063, 0.09, 0.13], glow: [0.13, 0.31, 0.48], amount: 0.85 },
 } as const;
 
 export function Hero() {
@@ -55,68 +50,36 @@ export function Hero() {
         }
       />
 
-      <div className="container-page grid gap-10 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16 lg:py-20 [@media(max-height:480px)]:py-6">
-        <div>
-          <h1 id="hero-titulo" className="text-[2.25rem] font-bold text-ink sm:text-5xl [@media(max-height:480px)]:text-4xl">
-            ¿Qué necesitás hacer?
-          </h1>
-          <p className="mt-4 max-w-xl text-lg text-ink-2 [@media(max-height:480px)]:mt-2">
-            Pagá, consultá tu deuda, sacá turno y hacé tus trámites de impuestos provinciales desde donde estés.
-          </p>
+      <div className="container-page py-12 sm:py-16 lg:py-20 [@media(max-height:480px)]:py-6">
+        <h1 id="hero-titulo" className="text-[2.25rem] font-bold text-ink sm:text-5xl [@media(max-height:480px)]:text-4xl">
+          ¿Qué necesitás hacer?
+        </h1>
 
-          <form role="search" onSubmit={submit} className="mt-8 max-w-2xl [@media(max-height:480px)]:mt-4" aria-label="Buscar trámites">
-            <label htmlFor="hero-buscar" className="mb-2 block font-semibold text-ink">
-              Buscar un trámite
-            </label>
-            <div className="flex">
-              <input
-                id="hero-buscar"
-                type="search"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Por ejemplo: libre deuda"
-                autoComplete="off"
-                className="h-13 min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-ink bg-surface px-4 text-base text-ink placeholder:text-ink-3 focus:shadow-none focus:outline-[3px] focus:outline-offset-0 focus:outline-focus"
-              />
-              <button
-                type="submit"
-                className="inline-flex h-13 items-center gap-2 rounded-r-lg bg-brand px-5 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
-              >
-                <Search className="size-5" aria-hidden="true" />
-                <span className="max-sm:sr-only">Buscar</span>
-              </button>
-            </div>
-          </form>
-
-          <div className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-[0.95rem] coarse:gap-y-5">
-            <span className="text-ink-3">Más buscados:</span>
-            {MAS_BUSCADOS.map((s) => (
-              <Link
-                key={s.q}
-                to={`/tramites?q=${encodeURIComponent(s.q)}`}
-                className="link font-semibold coarse:-my-2.5 coarse:inline-block coarse:py-2.5"
-              >
-                {s.label}
-              </Link>
-            ))}
+        <form role="search" onSubmit={submit} className="mt-8 max-w-2xl [@media(max-height:480px)]:mt-4" aria-label="Buscar trámites">
+          <label htmlFor="hero-buscar" className="mb-2 block font-semibold text-ink">
+            Buscar un trámite
+          </label>
+          <div className="flex">
+            <input
+              id="hero-buscar"
+              type="search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Por ejemplo: libre deuda"
+              autoComplete="off"
+              className="h-13 min-w-0 flex-1 rounded-l-lg border-2 border-r-0 border-ink bg-surface px-4 text-base text-ink placeholder:text-ink-3 focus:shadow-none focus:outline-[3px] focus:outline-offset-0 focus:outline-focus"
+            />
+            <button
+              type="submit"
+              className="inline-flex h-13 items-center gap-2 rounded-r-lg bg-brand px-5 font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+            >
+              <Search className="size-5" aria-hidden="true" />
+              <span className="max-sm:sr-only">Buscar</span>
+            </button>
           </div>
-        </div>
+        </form>
 
-        <nav aria-labelledby="accesos-titulo" className="lg:border-l lg:border-line lg:pl-10">
-          <h2 id="accesos-titulo" className="text-lg font-bold text-ink">
-            Accesos directos
-          </h2>
-          <ul className="mt-3">
-            {ACCESOS.map((a) => (
-              <li key={a.titulo} className="border-t border-line py-3.5 first:border-t-0 first:pt-2">
-                <SmartLink to={a.href} className="link text-[1.05rem] font-semibold">
-                  {a.titulo}
-                </SmartLink>
-                <p className="mt-0.5 text-[0.95rem] text-ink-3">{a.detalle}</p>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <AccionesHero acciones={ACCIONES} />
       </div>
     </section>
   );

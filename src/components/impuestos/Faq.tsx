@@ -5,8 +5,8 @@ import { Disclosure } from "../ui/primitives";
 export function Faq({ preguntas }: { preguntas: Pregunta[] }) {
   return (
     <div className="border-t border-line">
-      {preguntas.map((q, i) => (
-        <Disclosure key={q.pregunta} summary={q.pregunta} defaultOpen={i === 0}>
+      {preguntas.map((q) => (
+        <Disclosure key={q.pregunta} summary={q.pregunta}>
           <p>{q.respuesta}</p>
         </Disclosure>
       ))}

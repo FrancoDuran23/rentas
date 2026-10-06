@@ -1,8 +1,10 @@
 // luz.wgsl — Luz ambiental en movimiento para la portada.
 //
-// Tres masas de luz suaves derivan por trayectorias lentas (Lissajous de
-// 29 a 47 s por eje). Se mueven despacio pero con dirección, así el ojo
-// lo lee como luz que se desplaza y no como humo que se reforma. Los colores
+// Tres masas de luz celeste (el de los arcos del isologo) derivan por
+// trayectorias de Lissajous de 7,5 a 10 s por eje: el movimiento se nota sin
+// mirarlo, con dirección, como luz que se desplaza y no como humo. Viven
+// arriba y a la derecha; abajo a la izquierda (fila "Más buscados", enlaces
+// azules) la luz se apaga para que el texto mantenga 4,5:1. Los colores
 // llegan como uniforms (sRGB) para servir en modo claro y oscuro.
 //
 // Todo es periódico en PERIOD segundos (los períodos dividen a PERIOD), así
@@ -20,6 +22,10 @@ struct Params {
   top: vec3f,
   bottom: vec3f,
   glow: vec3f,
+  // Rectángulo (uv: x0, y0, x1, y1) donde la luz se topea en 0,45 para que texto
+  // azul encima mantenga 4,5:1. Hoy el inicio no lo usa (todo va en tinta o sobre
+  // fondo propio): en cero no hace nada.
+  clear: vec4f,
 }
 
 @group(0) @binding(0) var<uniform> params: Params;
@@ -50,19 +56,20 @@ fn drift(t: f32, amp: vec2f, nx: f32, ny: f32, phase: vec2f) -> vec2f {
   // El puntero (sólo escritorio) corre las masas unos píxeles, nada más.
   let nudge = (params.pointer - 0.5) * 0.02;
 
-  // Composición apaisada: las masas viven a la derecha, lejos del texto.
-  // Períodos (s): 34/41, 43/29, 38/47 → n = PERIOD / T.
-  let a1 = vec2f(0.80, 0.30) * scale + drift(t, vec2f(0.085 * scale.x, 0.2 * scale.y), 35.0, 29.0, vec2f(0.0, 1.7)) + nudge;
-  let a2 = vec2f(0.96, 0.85) * scale + drift(t, vec2f(0.085 * scale.x, 0.2 * scale.y), 28.0, 41.0, vec2f(2.1, 0.6)) + nudge;
-  let a3 = vec2f(0.64, 1.05) * scale + drift(t, vec2f(0.085 * scale.x, 0.2 * scale.y), 32.0, 26.0, vec2f(4.0, 2.9)) + nudge;
-  let wide = 0.55 * mass(p, a1, 0.65) + 0.45 * mass(p, a2, 0.60) + 0.30 * mass(p, a3, 0.70);
+  // Composición apaisada: las masas viven arriba y a la derecha.
+  // Períodos (s): 8/10, 10/7,5, 9,2/8 → n = PERIOD / T (enteros).
+  let amp = vec2f(0.12 * scale.x, 0.26 * scale.y);
+  let a1 = vec2f(0.78, 0.22) * scale + drift(t, amp, 150.0, 120.0, vec2f(0.0, 1.7)) + nudge;
+  let a2 = vec2f(0.97, 0.80) * scale + drift(t, amp, 120.0, 160.0, vec2f(2.1, 0.6)) + nudge;
+  let a3 = vec2f(0.55, -0.08) * scale + drift(t, amp, 130.0, 150.0, vec2f(4.0, 2.9)) + nudge;
+  let wide = 0.80 * mass(p, a1, 0.70) + 0.60 * mass(p, a2, 0.62) + 0.55 * mass(p, a3, 0.60);
 
   // Composición vertical (móvil): una masa grande arriba a la derecha, casi
   // fuera del lienzo, y otra más tenue abajo a la izquierda detrás de los
   // accesos directos. El texto ocupa todo el ancho, por eso la luz es más baja.
-  let b1 = vec2f(1.0, 0.03) * scale + drift(t, vec2f(0.14, 0.09 * scale.y), 35.0, 29.0, vec2f(0.0, 1.7));
-  let b2 = vec2f(0.10, 0.92) * scale + drift(t, vec2f(0.14, 0.09 * scale.y), 28.0, 41.0, vec2f(2.1, 0.6));
-  let tall = min(0.65, 0.75 * mass(p, b1, 0.90) + 0.50 * mass(p, b2, 0.75));
+  let b1 = vec2f(0.95, 0.04) * scale + drift(t, vec2f(0.18, 0.10 * scale.y), 150.0, 120.0, vec2f(0.0, 1.7));
+  let b2 = vec2f(0.10, 0.95) * scale + drift(t, vec2f(0.18, 0.08 * scale.y), 120.0, 160.0, vec2f(2.1, 0.6));
+  let tall = min(0.85, 0.95 * mass(p, b1, 0.95) + 0.55 * mass(p, b2, 0.75));
 
   // Un toque de ruido de una sola octava para que las masas no sean círculos
   // perfectos; su deriva también es circular, y por eso periódica.
@@ -70,7 +77,17 @@ fn drift(t: f32, amp: vec2f, nx: f32, ny: f32, phase: vec2f) -> vec2f {
   let w = 0.12 * simplex2d(p * 0.9 + ring);
 
   let k = smoothstep(0.7, 0.95, aspect);
-  let veil = clamp(mix(tall, wide, k) + w * mix(0.6, 1.0, k), 0.0, 1.0);
+  var veil = clamp(mix(tall, wide, k) + w * mix(0.6, 1.0, k), 0.0, 1.0);
+  // Claro quieto alrededor de un texto azul (uniform `clear`): ahí la luz
+  // se topea en 0,45, que en claro deja el fondo ≥ 0,75 de luminancia y en
+  // oscuro ≤ 0,05 (4,5:1 con el azul de cada tema). Se mide en píxeles para
+  // que el margen no dependa del tamaño del hero; pasa luz, no hay un hueco.
+  let px = uv * res;
+  let r0 = params.clear.xy * res;
+  let r1 = params.clear.zw * res;
+  let dist = length(max(max(r0 - px, px - r1), vec2f(0.0)));
+  let hasClear = step(0.001, params.clear.z - params.clear.x);
+  veil = min(veil, mix(1.0, mix(0.45, 1.0, smoothstep(24.0, 140.0, dist)), hasClear));
 
   // Base: degradé vertical casi imperceptible; encima, el velo.
   var col = mix(srgbToLinear3(params.top), srgbToLinear3(params.bottom), smoothstep(0.0, 1.0, uv.y));

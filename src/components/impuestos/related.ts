@@ -11,5 +11,3 @@ export const CANAL_LABEL: Record<Tramite["canal"], string> = {
   presencial: "Presencial",
   "online-y-presencial": "En línea o presencial",
 };
-
-export const opensNewTab = (href: string) => /^https?:/.test(href);

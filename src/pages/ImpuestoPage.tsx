@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { ArrowUpRight, CalendarDays, ListChecks } from "lucide-react";
 import { getImpuesto, IMPUESTOS } from "../data/impuestos";
 import { PORTAL } from "../data/contacto";
@@ -7,13 +7,13 @@ import { LINKS } from "../data/site";
 import type { Impuesto } from "../data/types";
 import { useDocumentTitle } from "../lib/useDocumentTitle";
 import { buttonClass, ButtonLink } from "../components/ui/Button";
-import { ArrowLink, LinkList, Notice, PageIntro, SectionHeader, SmartLink } from "../components/ui/primitives";
+import { ArrowLink, Disclosure, LinkList, Notice, PageIntro, SectionHeader, SmartLink } from "../components/ui/primitives";
 import { SectionNav, type NavSection } from "../components/impuestos/SectionNav";
 import { TramitesImpuesto } from "../components/impuestos/TramitesImpuesto";
 import { VencimientosImpuesto } from "../components/impuestos/VencimientosImpuesto";
 import { Faq } from "../components/impuestos/Faq";
 import { OtrosImpuestos } from "../components/impuestos/OtrosImpuestos";
-import { opensNewTab, tramitesDe } from "../components/impuestos/related";
+import { tramitesDe } from "../components/impuestos/related";
 
 export function ImpuestoPage() {
   const { slug } = useParams();
@@ -31,11 +31,11 @@ function ImpuestoDetalle({ imp }: { imp: Impuesto }) {
   useDocumentTitle(imp.nombre);
   const tramites = tramitesDe(imp);
 
+  // Primero la tarea (fecha y trámites); la explicación queda plegada detrás de un gesto.
   const sections: NavSection[] = [
-    ...(imp.puntos.length ? [{ id: "resumen", label: "Lo que tenés que saber" }] : []),
-    { id: "quienes", label: "Quiénes pagan" },
-    ...(tramites.length ? [{ id: "tramites", label: "Trámites" }] : []),
     { id: "vencimientos", label: "Próximos vencimientos" },
+    ...(tramites.length ? [{ id: "tramites", label: "Trámites" }] : []),
+    { id: "sobre", label: "Sobre el impuesto" },
     ...(imp.preguntas.length ? [{ id: "preguntas", label: "Preguntas frecuentes" }] : []),
   ];
 
@@ -43,12 +43,10 @@ function ImpuestoDetalle({ imp }: { imp: Impuesto }) {
     <>
       <PageIntro
         title={imp.nombre}
-        description={imp.bajada}
         breadcrumbs={[{ label: "Impuestos", to: "/impuestos" }, { label: imp.nombre }]}
       >
-        <p className="prose-measure text-ink-3">{imp.descripcion}</p>
         {/* Apilados en el celular, a todo el ancho (no de anchos dispares). */}
-        <div className="mt-6 grid gap-3 sm:flex sm:flex-wrap">
+        <div className="grid gap-3 sm:flex sm:flex-wrap">
           {tramites.length ? (
             <a href="#tramites" className={buttonClass({ variant: "primary", className: "w-full sm:w-auto" })}>
               <ListChecks aria-hidden="true" />
@@ -68,46 +66,44 @@ function ImpuestoDetalle({ imp }: { imp: Impuesto }) {
         </aside>
 
         <div className="grid min-w-0 gap-14 sm:gap-16">
-          {imp.puntos.length ? (
-            <Bloque id="resumen" title="Lo que tenés que saber">
-              <ul className="prose-measure grid list-disc gap-2.5 pl-5 text-ink-2 marker:text-ink-3">
-                {imp.puntos.map((p) => (
-                  <li key={p} className="pl-1">
-                    {p}
-                  </li>
-                ))}
-              </ul>
-            </Bloque>
-          ) : null}
-
-          <Bloque id="quienes" title="Quiénes pagan">
-            <p className="prose-measure text-ink-2">{imp.quienes}</p>
-            <p className="mt-3 text-ink-3">
-              ¿No sabés si te alcanza?{" "}
-              <Link to="/atencion" className="link">
-                Consultá con Atención al contribuyente
-              </Link>
-              .
-            </p>
-          </Bloque>
-
-          {tramites.length ? (
-            <Bloque
-              id="tramites"
-              title="Trámites"
-              description={`${tramites.length} ${tramites.length === 1 ? "trámite relacionado" : "trámites relacionados"} con ${imp.corto}.${tramites.every((t) => opensNewTab(t.href)) ? " Se realizan en el sitio oficial de Rentas." : ""}`}
-              action={<ArrowLink to={`/tramites?impuesto=${imp.slug}`}>Ver en la guía de trámites</ArrowLink>}
-            >
-              <TramitesImpuesto tramites={tramites} />
-            </Bloque>
-          ) : null}
-
           <Bloque
             id="vencimientos"
             title="Próximos vencimientos"
             action={<ArrowLink to="/vencimientos">Calendario completo</ArrowLink>}
           >
             <VencimientosImpuesto imp={imp} />
+          </Bloque>
+
+          {tramites.length ? (
+            <Bloque
+              id="tramites"
+              title="Trámites"
+              action={<ArrowLink to={`/tramites?impuesto=${imp.slug}`}>Ver en la guía de trámites</ArrowLink>}
+            >
+              <TramitesImpuesto tramites={tramites} />
+            </Bloque>
+          ) : null}
+
+          <Bloque id="sobre" title="Sobre el impuesto">
+            <div className="border-t border-line">
+              <Disclosure summary="Qué es">
+                <p>{imp.descripcion}</p>
+              </Disclosure>
+              <Disclosure summary="Quiénes pagan">
+                <p>{imp.quienes}</p>
+              </Disclosure>
+              {imp.puntos.length ? (
+                <Disclosure summary="Lo que tenés que saber">
+                  <ul className="grid list-disc gap-2.5 pl-5 marker:text-ink-3">
+                    {imp.puntos.map((p) => (
+                      <li key={p} className="pl-1">
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </Disclosure>
+              ) : null}
+            </div>
           </Bloque>
 
           {imp.preguntas.length ? (
@@ -120,9 +116,6 @@ function ImpuestoDetalle({ imp }: { imp: Impuesto }) {
             <h2 id="ayuda-titulo" className="text-xl font-bold text-ink">
               ¿Te quedó alguna duda?
             </h2>
-            <p className="prose-measure mt-1 text-ink-2">
-              Consultá los canales de atención de Rentas o sacá un turno para que te atiendan en persona.
-            </p>
             <div className="mt-5 grid gap-3 sm:flex sm:flex-wrap">
               <ButtonLink to="/atencion" className="w-full sm:w-auto">
                 Ir a Atención

@@ -12,7 +12,7 @@ const base =
  * El borde con ring-* es un box-shadow y pisa la franja oscura del foco global
  * (:focus-visible en index.css); FOCO_CON_RING la repone sobre el ring.
  */
-const FOCO_CON_RING = "focus-visible:shadow-[0_0_0_5px_var(--focus-ink)]";
+export const FOCO_CON_RING = "focus-visible:shadow-[0_0_0_5px_var(--focus-ink)]";
 
 const variants: Record<Variant, string> = {
   primary: "bg-brand text-brand-ink hover:bg-brand-hover",

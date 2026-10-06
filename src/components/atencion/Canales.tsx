@@ -8,23 +8,16 @@ import { Button } from "../ui/Button";
 import { SectionHeader } from "../ui/primitives";
 import { NEW_TAB } from "./utils";
 
-/* ------------------------------------------------------------------ */
-/* Helpers                                                             */
-/* ------------------------------------------------------------------ */
-
 const opensNewTab = (href: string) => /^https?:/.test(href);
 
-/** Sólo se copian datos de contacto (número o correo), no enlaces web. */
 function copyLabel(c: Canal): string | null {
   if (c.href.startsWith("mailto:")) return "Copiar correo";
   if (c.href.startsWith("tel:") || /^https:\/\/wa\.me\//.test(c.href)) return "Copiar número";
   return null;
 }
 
-/** Números de teléfono y WhatsApp: se muestran grandes y con cifras tabulares. */
 const isNumber = (c: Canal) => c.href.startsWith("tel:") || /^https:\/\/wa\.me\//.test(c.href);
 
-/** En correos, permite cortar la línea antes de la "@" en pantallas angostas. */
 function formatValor(valor: string) {
   const at = valor.indexOf("@");
   if (at <= 0) return valor;
@@ -79,10 +72,6 @@ function CopyButton({ value, label }: { value: string; label: string }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Canal                                                               */
-/* ------------------------------------------------------------------ */
-
 function ChannelRow({ c }: { c: Canal }) {
   const copy = copyLabel(c);
   const number = isNumber(c);
@@ -95,18 +84,15 @@ function ChannelRow({ c }: { c: Canal }) {
           <p className={clsx("mt-0.5 font-bold text-ink", number ? "text-2xl tabular sm:text-[1.75rem]" : "text-lg sm:text-xl")}>
             <ChannelLink c={c} />
           </p>
-          <p className="mt-1 text-ink-3">
-            {c.descripcion}
-            {c.horario ? (
-              <span className="mt-1 flex items-center gap-1.5 text-sm">
-                <Clock className="size-4 shrink-0" aria-hidden="true" />
-                <span>
-                  <span className="sr-only">Horario: </span>
-                  {c.horario}
-                </span>
+          {c.horario ? (
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-3">
+              <Clock className="size-4 shrink-0" aria-hidden="true" />
+              <span>
+                <span className="sr-only">Horario: </span>
+                {c.horario}
               </span>
-            ) : null}
-          </p>
+            </p>
+          ) : null}
         </div>
       </div>
       {copy ? (
@@ -118,20 +104,12 @@ function ChannelRow({ c }: { c: Canal }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Sección                                                             */
-/* ------------------------------------------------------------------ */
-
 export function Canales({ id }: { id: string }) {
   if (!CANALES.length) return null;
 
   return (
     <section id={id} aria-labelledby={`${id}-titulo`} className="container-page py-14 sm:py-16">
-      <SectionHeader
-        id={`${id}-titulo`}
-        title="Centro de Atención Omnicanal"
-        description="Hacé tus consultas, reclamos y sugerencias por el canal que te quede más cómodo, sin ir a una oficina."
-      />
+      <SectionHeader id={`${id}-titulo`} title="Canales" />
       <ul className="mt-6 max-w-4xl border-b border-line">
         {CANALES.map((c) => (
           <ChannelRow key={c.id} c={c} />

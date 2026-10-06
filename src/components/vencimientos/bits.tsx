@@ -28,7 +28,7 @@ export function ImpuestoTag({ slug, className }: { slug: ImpuestoSlug; className
   return (
     <span className={clsx("inline-flex items-center gap-1.5 text-sm", className)}>
       <Mark slug={slug} />
-      <Link to={`/impuestos/${m.slug}`} className="link">
+      <Link to={`/impuestos/${m.slug}`} className="link hit">
         <span className="sr-only">Ver información de </span>
         {m.nombre}
       </Link>
@@ -44,7 +44,7 @@ export function DateBadge({ iso, tone = "neutral" }: { iso: string; tone?: "neut
       <span className={clsx("block text-2xl font-bold tabular", tone === "past" ? "text-ink-3" : "text-ink")}>
         {d.getDate()}
       </span>
-      <span className="mt-1 block text-xs font-semibold text-ink-3 uppercase">{weekdayShort(d).slice(0, 3)}</span>
+      <span className="mt-1 block text-sm font-semibold text-ink-3 uppercase">{weekdayShort(d).slice(0, 3)}</span>
     </span>
   );
 }

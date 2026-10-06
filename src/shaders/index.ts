@@ -15,7 +15,7 @@ export const SHADERS = {
   /** Portada: luz celeste que deriva despacio; los colores llegan por uniforms según el tema. */
   luz: {
     source: luz,
-    defaults: { amount: 0.85, grain: 0.004, top: [1, 1, 1], bottom: [0.957, 0.976, 0.992], glow: [0.78, 0.89, 0.97] },
+    defaults: { amount: 0.85, grain: 0.004, top: [1, 1, 1], bottom: [0.957, 0.976, 0.992], glow: [0.78, 0.89, 0.97], clear: [0, 0, 0, 0] },
     startTime: 0,
   },
 } satisfies Record<string, ShaderDef>;

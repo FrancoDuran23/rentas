@@ -52,7 +52,6 @@ export function NoticiasPage() {
       <PageIntro
         title="Noticias"
         breadcrumbs={[{ label: "Noticias" }]}
-        description="Prórrogas, planes de pago, beneficios y novedades de atención de la Dirección Provincial de Rentas, de la más reciente a la más antigua."
       />
 
       <div className="container-page grid grid-cols-[minmax(0,1fr)] gap-8 py-10 sm:py-14 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-14 xl:grid-cols-[minmax(0,1fr)_18rem]">
@@ -120,12 +119,9 @@ export function NoticiasPage() {
 
               {meses.map((mes) => (
                 <section key={mes.clave} aria-labelledby={`mes-${mes.clave}`} className="mt-12 sm:mt-14">
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                    <h2 id={`mes-${mes.clave}`} className="text-xl font-bold text-ink sm:text-2xl">
-                      {mes.titulo}
-                    </h2>
-                    <p className="text-sm text-ink-3 tabular">{plural(mes.items.length)}</p>
-                  </div>
+                  <h2 id={`mes-${mes.clave}`} className="text-xl font-bold text-ink sm:text-2xl">
+                    {mes.titulo}
+                  </h2>
                   <ul className="mt-3 border-b border-line">
                     {mes.items.map((n) => (
                       <NoticiaItem key={n.slug} noticia={n} highlighted={objetivo === n.slug} />
@@ -172,7 +168,7 @@ function FilterChip({
       className={chipClass(active, "gap-2")}
     >
       {children}
-      <span className={active ? "text-xs text-bg/75 tabular" : "text-xs text-ink-3 tabular"}>
+      <span className={active ? "text-sm text-bg/75 tabular" : "text-sm text-ink-3 tabular"}>
         <span className="sr-only">(</span>
         {count}
         <span className="sr-only">)</span>

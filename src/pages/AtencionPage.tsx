@@ -8,11 +8,11 @@ import { Preguntas } from "../components/atencion/Preguntas";
 import { useDocumentTitle } from "../lib/useDocumentTitle";
 
 const EN_ESTA_PAGINA = [
-  { id: "canales", label: "Canales de atención" },
+  { id: "canales", label: "Canales" },
   { id: "turnos", label: "Turnos" },
   { id: "oficinas", label: "Oficinas" },
-  { id: "medios-de-pago", label: "Medios de pago" },
-  { id: "preguntas", label: "Preguntas frecuentes" },
+  { id: "medios-de-pago", label: "Pagos" },
+  { id: "preguntas", label: "Preguntas" },
 ];
 
 export function AtencionPage() {
@@ -20,19 +20,12 @@ export function AtencionPage() {
 
   return (
     <>
-      <PageIntro
-        title="Atención al contribuyente"
-        breadcrumbs={[{ label: "Atención" }]}
-        description="Consultanos por teléfono, WhatsApp, chat o correo, sin moverte de tu casa. Si tenés que ir a una oficina, sacá turno antes."
-      >
-        <nav aria-labelledby="en-esta-pagina" className="flex flex-wrap items-baseline gap-x-5 gap-y-2 text-[0.95rem]">
-          <span id="en-esta-pagina" className="text-ink-3">
-            En esta página:
-          </span>
-          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+      <PageIntro title="Atención" breadcrumbs={[{ label: "Atención" }]}>
+        <nav aria-label="Secciones de esta página" className="flex flex-wrap gap-x-5 gap-y-2 text-[0.95rem]">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2 coarse:gap-y-7">
             {EN_ESTA_PAGINA.map((s) => (
               <li key={s.id}>
-                <a href={`#${s.id}`} className="link font-semibold">
+                <a href={`#${s.id}`} className="link font-semibold hit">
                   {s.label}
                 </a>
               </li>

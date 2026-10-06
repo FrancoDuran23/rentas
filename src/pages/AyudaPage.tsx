@@ -30,7 +30,6 @@ export function AyudaPage() {
       <PageIntro
         title="Centro de ayuda"
         breadcrumbs={[{ label: "Centro de ayuda" }]}
-        description="Buscá un término, una duda frecuente o un trámite. Si no lo encontrás, te atendemos por teléfono, WhatsApp o chat."
       >
         <form role="search" aria-label="Buscar en el centro de ayuda" onSubmit={(e) => e.preventDefault()} className="max-w-2xl">
           <label htmlFor="ayuda-q" className="mb-2 block font-semibold text-ink">
@@ -97,10 +96,11 @@ export function AyudaPage() {
                     </span>
                     <h3 className="pt-0.5 text-lg font-bold text-ink">{p.titulo}</h3>
                   </div>
-                  <p className="mt-2 flex-1 text-ink-2">{p.descripcion}</p>
-                  <Link to={p.href} className="link mt-3 self-start font-semibold">
-                    {p.cta}
-                  </Link>
+                  <div className="mt-3 flex-1 pl-11">
+                    <Link to={p.href} className="link hit font-semibold">
+                      {p.cta}
+                    </Link>
+                  </div>
                 </li>
               ))}
             </ol>
@@ -126,28 +126,31 @@ export function AyudaPage() {
         {glosario.length ? (
           <section aria-labelledby="glosario-titulo" className={preguntas.length ? "mt-14 sm:mt-16" : undefined}>
             <SectionHeader id="glosario-titulo" title="Glosario" />
-            <dl className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-x-10 md:grid-cols-2">
-              {glosario.map((g) => (
-                <div key={g.termino} className="min-w-0 border-t border-line py-4">
-                  <dt className="font-bold text-ink">{g.termino}</dt>
-                  <dd className="prose-measure mt-1 text-ink-2">{g.definicion}</dd>
-                </div>
-              ))}
-            </dl>
+            {/* Visible el término; la definición, detrás de un gesto. Al buscar se abren las que coinciden. */}
+            <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-x-10 md:grid-cols-2">
+              {[glosario.slice(0, Math.ceil(glosario.length / 2)), glosario.slice(Math.ceil(glosario.length / 2))].map(
+                (col, i) =>
+                  col.length ? (
+                    <div key={i} className="min-w-0 border-t border-line max-md:not-first:border-t-0">
+                      {col.map((g) => (
+                        <Disclosure key={g.termino} summary={g.termino} defaultOpen={buscando}>
+                          <p>{g.definicion}</p>
+                        </Disclosure>
+                      ))}
+                    </div>
+                  ) : null,
+              )}
+            </div>
           </section>
         ) : null}
 
         {!buscando ? (
           <section aria-labelledby="recursos-titulo" className="mt-14 sm:mt-16">
-            <SectionHeader
-              id="recursos-titulo"
-              title="Recursos"
-              description="Material de consulta publicado en el sitio oficial de la Dirección Provincial de Rentas."
-            />
+            <SectionHeader id="recursos-titulo" title="Recursos" />
             <LinkList
               className="mt-6"
               columns={3}
-              items={RECURSOS.map((r) => ({ key: r.titulo, href: r.href, title: r.titulo, description: r.descripcion }))}
+              items={RECURSOS.map((r) => ({ key: r.titulo, href: r.href, title: r.titulo }))}
             />
           </section>
         ) : null}

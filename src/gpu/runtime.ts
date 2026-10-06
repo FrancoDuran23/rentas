@@ -24,9 +24,10 @@ const compact = () => matchMedia("(pointer: coarse), (max-width: 767px)").matche
 /**
  * Un velo de luz no tiene detalle fino: se dibuja por debajo de la
  * resolución CSS y el navegador lo escala con filtrado bilineal.
- * A la deriva lenta del velo, 30 (24 en móvil) cuadros sobran.
+ * Con la deriva más visible del hero, 30 cuadros se notaban a saltos:
+ * 60 con mouse y pantalla ancha, 30 en táctil o angosta (batería).
  */
-const FPS = () => (compact() ? 24 : 30);
+const FPS = () => (compact() ? 30 : 60);
 const RENDER_SCALE = () => (compact() ? 0.5 : 0.75);
 
 interface Layer {

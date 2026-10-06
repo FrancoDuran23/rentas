@@ -1,9 +1,9 @@
 import { getImpuesto } from "../../data/impuestos";
-import { ArrowLink, SectionHeader } from "../ui/primitives";
+import { ArrowLink, Disclosure } from "../ui/primitives";
 
 /**
- * Situaciones cotidianas → impuesto que corresponde. Las que apuntan a un
- * impuesto que no está en IMPUESTOS no se muestran.
+ * Situaciones cotidianas → impuesto que corresponde, plegadas detrás de la
+ * pregunta. Las que apuntan a un impuesto que no está en IMPUESTOS no se muestran.
  */
 const SITUACIONES: { texto: string; slug: string }[] = [
   { texto: "Tengo una casa, un departamento o un terreno", slug: "inmobiliario" },
@@ -13,7 +13,7 @@ const SITUACIONES: { texto: string; slug: string }[] = [
   { texto: "Tengo una explotación minera", slug: "minerales" },
 ];
 
-export function Orientacion({ id = "orientacion" }: { id?: string }) {
+export function Orientacion({ className }: { className?: string }) {
   const items = SITUACIONES.flatMap((s) => {
     const imp = getImpuesto(s.slug);
     return imp ? [{ texto: s.texto, imp }] : [];
@@ -21,27 +21,24 @@ export function Orientacion({ id = "orientacion" }: { id?: string }) {
   if (!items.length) return null;
 
   return (
-    <section id={id} aria-labelledby={`${id}-titulo`} className="container-page pb-14 sm:pb-20">
-      <div className="rounded-xl bg-surface-2 p-6 sm:p-8 lg:p-10">
-        <SectionHeader
-          id={`${id}-titulo`}
-          title="¿No sabés qué impuesto te corresponde?"
-          description="Buscá la situación que más se parece a la tuya."
-        />
-        <ul className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-x-10 md:grid-cols-2">
-          {items.map(({ texto, imp }) => (
-            <li key={imp.slug} className="min-w-0 border-t border-line py-4">
-              <p className="text-ink">{texto}</p>
-              <p className="mt-1">
-                <ArrowLink to={`/impuestos/${imp.slug}`}>
-                  <span className="sr-only">Te corresponde: </span>
-                  {imp.nombre}
-                </ArrowLink>
-              </p>
-            </li>
-          ))}
-        </ul>
+    <div className={className}>
+      <div className="border-t border-line">
+        <Disclosure summary="¿No sabés qué impuesto te corresponde?">
+          <ul className="grid gap-4">
+            {items.map(({ texto, imp }) => (
+              <li key={imp.slug} className="min-w-0">
+                <p className="text-ink">{texto}</p>
+                <p className="mt-1">
+                  <ArrowLink to={`/impuestos/${imp.slug}`}>
+                    <span className="sr-only">Te corresponde: </span>
+                    {imp.nombre}
+                  </ArrowLink>
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Disclosure>
       </div>
-    </section>
+    </div>
   );
 }

@@ -5,23 +5,15 @@ import { normaLabel, splitTitulo } from "./utils";
 
 interface Clave {
   norma: Norma;
-  /** Para qué sirve consultarla (genérico). */
-  uso: string;
 }
 
 /** Las dos normas que más se consultan: Código Fiscal y Ley Impositiva vigente. */
 export function NormasClave({ codigo, impositiva }: { codigo?: Norma; impositiva?: Norma }) {
   const items: Clave[] = [];
   if (codigo)
-    items.push({
-      norma: codigo,
-      uso: "Consultalo para saber cómo funciona cada impuesto provincial, qué obligaciones tenés y cuáles son los plazos y procedimientos.",
-    });
+    items.push({ norma: codigo });
   if (impositiva)
-    items.push({
-      norma: impositiva,
-      uso: "Consultala para conocer las alícuotas por actividad y los montos fijos y mínimos de cada impuesto para el año.",
-    });
+    items.push({ norma: impositiva });
   if (!items.length) return null;
 
   return (
@@ -35,7 +27,7 @@ export function NormasClave({ codigo, impositiva }: { codigo?: Norma; impositiva
   );
 }
 
-function NormaClave({ norma, uso }: Clave) {
+function NormaClave({ norma }: Clave) {
   const [head, sub] = splitTitulo(norma.titulo);
   const id = `clave-${norma.numero.replace(/\W/g, "")}`;
 
@@ -48,7 +40,6 @@ function NormaClave({ norma, uso }: Clave) {
         <span className="tabular">{normaLabel(norma)}</span>
         {sub ? <> · {sub}</> : null}
       </p>
-      <p className="mt-4 text-ink-2">{uso}</p>
       {norma.href ? (
         <div className="mt-auto pt-5">
           <ArrowLink to={norma.href}>

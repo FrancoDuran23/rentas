@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 import type { Vencimiento } from "../../data/types";
 import { formatLong, formatMonth } from "../../lib/dates";
-import { buttonClass } from "../ui/Button";
+import { buttonClass, FOCO_CON_RING } from "../ui/Button";
 import { Mark } from "./bits";
 import {
   WEEKDAYS,
@@ -133,7 +133,8 @@ export function MonthCalendar({ view, onViewChange, min, max, hoy, byDate, selec
 
   // 36px con mouse, 44px en pantallas táctiles.
   const navBtn =
-    "inline-flex size-9 items-center justify-center rounded-lg bg-surface text-ink ring-1 ring-line-strong ring-inset transition-colors hover:bg-surface-2 aria-disabled:cursor-not-allowed aria-disabled:text-ink-3 aria-disabled:opacity-50 aria-disabled:hover:bg-surface coarse:size-11";
+    "inline-flex size-9 items-center justify-center rounded-lg bg-surface text-ink ring-1 ring-line-strong ring-inset transition-colors hover:bg-surface-2 aria-disabled:cursor-not-allowed aria-disabled:text-ink-3 aria-disabled:opacity-50 aria-disabled:hover:bg-surface coarse:size-11 " +
+    FOCO_CON_RING;
 
   return (
     <div>
@@ -180,7 +181,7 @@ export function MonthCalendar({ view, onViewChange, min, max, hoy, byDate, selec
         </div>
       </div>
 
-      <p id={hintId} className="sr-only">
+      <p id={hintId} hidden>
         Usá las flechas para moverte entre días, Re Pág y Av Pág para cambiar de mes, y Enter para ver los
         vencimientos del día.
       </p>
@@ -195,7 +196,7 @@ export function MonthCalendar({ view, onViewChange, min, max, hoy, byDate, selec
         <thead>
           <tr>
             {WEEKDAYS.map((w) => (
-              <th key={w.long} scope="col" abbr={w.long} className="pb-2 text-center text-xs font-semibold text-ink-3">
+              <th key={w.long} scope="col" abbr={w.long} className="pb-2 text-center text-sm font-semibold text-ink-3">
                 {capitalize(w.short.slice(0, 3))}
               </th>
             ))}

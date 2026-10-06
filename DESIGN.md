@@ -268,6 +268,8 @@ components:
     typography: "{typography.body-sm}"
 ---
 
+> **Este documento ya no es la fuente.** El sistema vive en `.claude/skills/rentas-design/SKILL.md`, que manda sobre este archivo. Queda como historia y como detalle de componentes.
+
 # Design System: Rentas Jujuy
 
 ## Overview

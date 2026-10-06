@@ -16,7 +16,8 @@ export const CONTACTO = {
 
 export const PORTAL = {
   sitioOficial: OFFICIAL_URL,
-  clave: { cta: "Ingresar", ctaLargo: "Ingresar con clave fiscal", href: LINKS.login },
+  // Prototipo: el ingreso rediseñado (/ingresar) deriva al portal oficial (LINKS.login).
+  clave: { cta: "Ingresar", ctaLargo: "Ingresar con clave fiscal", href: "/ingresar" },
   turnos: { href: LINKS.turnos },
   sinClave: { href: LINKS.serviciosSinClave },
 } as const;
